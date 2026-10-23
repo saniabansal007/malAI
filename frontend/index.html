@@ -1,0 +1,70 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LocalMind</title>
+<style>
+:root{--bg:#0f1318;--pn:#171d25;--ln:#2a3340;--tx:#e4e8ee;--mu:#8a96a6;--ac:#6fd3c0;--wa:#e8b86a}
+*{box-sizing:border-box}body{margin:0;height:100vh;display:grid;grid-template-columns:200px 1fr 240px;background:var(--bg);color:var(--tx);font:15px/1.55 "Segoe UI",system-ui,sans-serif}
+aside{background:var(--pn);padding:16px;overflow:auto}aside.l{border-right:1px solid var(--ln)}aside.r{border-left:1px solid var(--ln)}
+h1{font-size:18px;margin:0 0 16px}h3{font-size:13px;color:var(--mu);font-weight:600;margin:18px 0 6px}
+nav button{display:block;width:100%;text-align:left;background:none;border:0;color:var(--mu);padding:8px 10px;border-radius:6px;font:inherit;cursor:pointer}
+nav button.on{background:#222b36;color:var(--tx);box-shadow:inset 3px 0 var(--ac)}
+main{display:flex;flex-direction:column;min-width:0}#log{flex:1;overflow:auto;padding:20px 24px}
+.m{max-width:760px;margin:0 auto 16px;white-space:pre-wrap;word-wrap:break-word}.m.u{color:var(--ac)}
+.m code{background:#222b36;padding:1px 5px;border-radius:4px}.src{font-size:12px;color:var(--mu);border-left:2px solid var(--ln);padding-left:8px;margin:4px 0}
+form{display:flex;gap:8px;padding:14px 24px;border-top:1px solid var(--ln)}
+input,textarea,button.go{background:var(--pn);border:1px solid var(--ln);color:var(--tx);border-radius:8px;padding:10px;font:inherit}
+form input{flex:1}button.go{background:var(--ac);color:#0b1512;border:0;font-weight:600;cursor:pointer}
+:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.kv{display:flex;justify-content:space-between;font-family:Consolas,monospace;font-size:13px;padding:3px 0}.kv b{color:var(--ac)}
+.ag{max-width:760px;margin:0 auto 8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.a{border:1px solid var(--ln);border-radius:8px;padding:8px;font-size:13px;color:var(--mu)}.a.running{border-color:var(--wa);color:var(--wa)}.a.done{border-color:var(--ac);color:var(--tx)}
+.pane{display:none}.pane.on{display:block}.box{max-width:760px;margin:0 auto}textarea{width:100%;min-height:120px}
+pre{white-space:pre-wrap;background:var(--pn);padding:12px;border-radius:8px}label{font-size:13px;color:var(--mu)}
+@media(max-width:800px){body{grid-template-columns:1fr}aside{display:none}}
+</style></head><body>
+<aside class="l"><h1>LocalMind</h1>
+<nav id="nav"><button data-m="chat" class="on">Chat</button><button data-m="docs">Chat with docs</button><button data-m="research">Deep research</button><button data-m="extract">Extract JSON</button><button data-m="bench">Benchmark</button></nav>
+<h3>Documents</h3><div id="files" style="font-size:13px;color:var(--mu)">None indexed</div>
+<input type="file" id="up" style="width:100%;margin-top:8px;font-size:12px"><button class="go" id="clr" style="margin-top:6px;background:none;color:var(--mu);border:1px solid var(--ln)">Clear documents</button>
+<h3>Memory</h3><div style="font-size:12px;color:var(--mu)">Start a message with “remember …” to save a fact.</div></aside>
+<main><div id="log"></div>
+<div id="extract" class="pane" style="padding:20px 24px"><div class="box"><label>Text</label><textarea id="etext"></textarea><label>Fields (comma separated)</label><input id="efields" style="width:100%" value="name, date, amount"><br><br><button class="go" id="ego">Extract</button><pre id="eout"></pre></div></div>
+<div id="bench" class="pane" style="padding:20px 24px"><div class="box"><p>Runs 8 requests sharing one long prefix, with the SGLang cache flushed before every request versus kept warm.</p><button class="go" id="bgo">Run benchmark</button><pre id="bout"></pre></div></div>
+<form id="f"><input id="q" placeholder="Ask anything…" autocomplete="off"><button class="go">Send</button></form></main>
+<aside class="r"><h3 style="margin-top:0">SGLang live</h3><div id="mt"></div></aside>
+<script>
+let mode="chat",hist=[];const $=s=>document.querySelector(s),log=$("#log");
+$("#nav").onclick=e=>{const m=e.target.dataset.m;if(!m)return;mode=m;hist=[];log.innerHTML="";
+ [...$("#nav").children].forEach(b=>b.classList.toggle("on",b===e.target));
+ log.style.display=["extract","bench"].includes(m)?"none":"";$("#extract").classList.toggle("on",m=="extract");$("#bench").classList.toggle("on",m=="bench");
+ $("#f").style.display=["extract","bench"].includes(m)?"none":"flex"};
+const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+function add(cls,t){const d=document.createElement("div");d.className="m "+cls;d.textContent=t;log.append(d);log.scrollTop=1e9;return d}
+async function sse(url,body,on){const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+ const rd=r.body.getReader(),dc=new TextDecoder();let buf="";
+ while(true){const{done,value}=await rd.read();if(done)break;buf+=dc.decode(value);const parts=buf.split("\n\n");buf=parts.pop();
+  for(const p of parts)if(p.startsWith("data: "))on(JSON.parse(p.slice(6)))}}
+$("#f").onsubmit=async e=>{e.preventDefault();const q=$("#q").value.trim();if(!q)return;$("#q").value="";add("u",q);
+ const out=add("","");let txt="";const tok=ev=>{if(ev.t=="tok"){txt+=ev.v;out.textContent=txt;log.scrollTop=1e9}};
+ try{
+ if(mode=="research"){const grid=document.createElement("div");grid.className="ag";log.insertBefore(grid,out);
+  await sse("/api/research",{question:q},ev=>{
+   if(ev.t=="stage")out.textContent=ev.v=="plan"?"Planning…":"Writing report…";
+   if(ev.t=="plan")ev.questions.forEach((s,i)=>{const a=document.createElement("div");a.className="a";a.id="a"+i;a.textContent=s;grid.append(a)});
+   if(ev.t=="agent"){const a=$("#a"+ev.i);a.className="a "+ev.state;if(ev.state=="done")a.title=ev.answer,a.textContent+=`  ✓ ${ev.score}/10`}
+   tok(ev)});}
+ else{hist.push({role:"user",content:q});
+  await sse("/api/chat",{messages:hist,docs:mode=="docs"},ev=>{
+   if(ev.t=="sources")ev.sources.forEach((s,i)=>{const d=add("src",`[${i+1}] ${s.src}: ${s.text.slice(0,160)}…`)});
+   tok(ev)});hist.push({role:"assistant",content:txt})}
+ }catch(err){out.textContent="Could not reach the model. Is SGLang running on port 30000?"}};
+$("#ego").onclick=async()=>{$("#eout").textContent="Working…";const r=await fetch("/api/extract",{method:"POST",headers:{"Content-Type":"application/json"},
+ body:JSON.stringify({text:$("#etext").value,fields:$("#efields").value.split(",").map(s=>s.trim()).filter(Boolean)})});$("#eout").textContent=JSON.stringify(await r.json(),null,2)};
+$("#bgo").onclick=async()=>{$("#bout").textContent="Running (about a minute)…";const j=await(await fetch("/api/benchmark",{method:"POST"})).json();
+ $("#bout").textContent=`No cache : ${j.no_cache_s}s\nWith cache: ${j.cache_s}s\nSpeedup   : ${j.speedup}x`};
+async function files(){const j=await(await fetch("/api/docs")).json();$("#files").textContent=j.sources.length?j.sources.join(", ")+` (${j.chunks} chunks)`:"None indexed"}
+$("#up").onchange=async e=>{const fd=new FormData();fd.append("file",e.target.files[0]);await fetch("/api/upload",{method:"POST",body:fd});files()};
+$("#clr").onclick=async()=>{await fetch("/api/docs",{method:"DELETE"});files()};
+async function met(){try{const m=await(await fetch("/api/metrics")).json();const row=(k,v)=>`<div class="kv"><span>${k}</span><b>${v??"–"}</b></div>`;
+ $("#mt").innerHTML=row("Server",m.up?"online":"offline")+row("Tokens/s",m.tps)+row("Server gen/s",m.gen_tps)+row("Cache hit",m.cache!=null?(m.cache*100).toFixed(0)+"%":null)+row("Running",m.running)+row("Queued",m.queued)+row("Tokens total",m.tokens)}catch{}}
+setInterval(met,1500);met();files();
+</script></body></html>
