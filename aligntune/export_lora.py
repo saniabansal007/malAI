@@ -1,7 +1,7 @@
-"""Export and packaging utility for trained banking LoRA adapters.
+"""Export and packaging utility for trained Dobby magical store LoRA adapters.
 
 Prepares the adapter weights, tokenizer, and deployment metadata in
-models/banking_lora_adapter/ for SGLang serving and AuditKIT evaluation.
+models/dobbie_magic_store_lora/ for SGLang serving and AuditKIT evaluation.
 """
 
 import json
@@ -55,25 +55,29 @@ def export_lora_adapter(
 
     # Generate metadata model card for Stage 3 AuditKIT & SGLang
     model_card = {
-        "model_name": "LocalMind AI Shopping Assistant",
+        "model_name": "Enchanted Emporium Dobby AI Shopping Assistant",
         "base_model": config.model_id,
         "adapter_type": "LoRA (4-bit QLoRA)",
         "r": config.lora_r,
         "alpha": config.lora_alpha,
         "target_modules": config.target_modules,
-        "domain": "E-Commerce Electronics Catalog & Store Policies (Returns, Warranties, Shipping, Price Match)",
+        "domain": "Enchanted Emporium Wizarding Product Catalog & Store Policies (Galleon Pricing, Owl Post, Robe Customization, Dark Arts Refusals)",
         "citation_handles": [
-            "SKU-LAP-101", "SKU-AUD-201", "SKU-WEAR-301",
-            "POL-RET-01", "POL-WAR-01", "POL-SHIP-01", "POL-PRICE-01"
+            "MAG-WAND-001", "MAG-BROOM-001", "MAG-ROB-GRY-001", "MAG-CAUL-001",
+            "RET-01", "RET-03", "SHIP-01", "PRICE-01", "ESC-01"
         ],
         "training_stages": {
-            "stage_1": "CuratorKIT E-Commerce Curation (57 Verified Grounded Samples)",
+            "stage_1": "CuratorKIT Enchanted Emporium Curation (154 Verified Grounded Samples)",
             "stage_2_sft": "Supervised Fine-Tuning with ChatML Prompt Formatting",
-            "stage_2_dpo": "Direct Preference Optimization against Hallucinations, Fake Coupons & Hygiene Returns",
+            "stage_2_dpo": "Direct Preference Optimization against Hallucinations, Fake Galleon Discounts & Dark Arts",
         },
-        "sglang_serving_argument": f"--lora-paths shopping_adapter={dst.resolve()}",
+        "sglang_serving_argument": f"--lora-paths dobbie_adapter={dst.resolve()}",
     }
 
+    with open(dst / "dobbie_model_card.json", "w", encoding="utf-8") as f:
+        json.dump(model_card, f, indent=2)
+
+    # Backward compatibility file
     with open(dst / "shopping_model_card.json", "w", encoding="utf-8") as f:
         json.dump(model_card, f, indent=2)
 

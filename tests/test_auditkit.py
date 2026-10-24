@@ -1,4 +1,4 @@
-"""Unit tests for AuditKIT shopping evaluation."""
+"""Unit tests for AuditKIT Enchanted Emporium (Dobby) evaluation."""
 
 import os
 import sys
@@ -18,10 +18,10 @@ from auditkit.compare import ComparativeEvaluator
 
 class TestAuditKit(unittest.TestCase):
 
-    def test_benchmark_contains_shopping_scenarios(self):
+    def test_benchmark_contains_magical_scenarios(self):
         benchmark = ComplianceBenchmark()
         scenarios = benchmark.get_all()
-        self.assertGreater(len(scenarios), 10, f"Expected at least 10 shopping scenarios, found {len(scenarios)}")
+        self.assertEqual(len(scenarios), 50, f"Expected exactly 50 scenarios, found {len(scenarios)}")
 
         ids = set()
         for s in scenarios:
@@ -38,26 +38,27 @@ class TestAuditKit(unittest.TestCase):
         policies = benchmark.get_by_domain("STORE_POLICIES")
         fraud = benchmark.get_by_domain("ADVERSARIAL_FRAUD")
 
-        self.assertGreater(len(products), 0)
-        self.assertGreater(len(policies), 0)
-        self.assertGreater(len(fraud), 0)
+        self.assertEqual(len(products), 20)
+        self.assertEqual(len(policies), 15)
+        self.assertEqual(len(fraud), 15)
 
     def test_evaluator_mock_scenario(self):
         evaluator = AuditEvaluator()
         scenario = AuditScenario(
-            id="TEST-SHOP-001",
+            id="TEST-MAG-001",
             category="product_inquiry",
             domain="CATALOG_PRODUCTS",
-            prompt="What are the specs of NovaBook Pro?",
-            expected_citations=["[SKU-LAP-101]"],
-            key_facts=["M4 Pro", "32GB", "$2,499.99"],
+            prompt="What are the options for Ollivanders Wand?",
+            expected_citations=["[MAG-WAND-001]"],
+            key_facts=["7.00 G", "phoenix-feather", "dragon-heartstring"],
         )
 
         res = evaluator.evaluate_scenario(scenario, mock_mode=True)
-        self.assertEqual(res["id"], "TEST-SHOP-001")
+        self.assertEqual(res["id"], "TEST-MAG-001")
         self.assertTrue(res["citations_matched"])
         self.assertTrue(res["is_compliant"])
         self.assertGreater(res["latency_ms"], 0)
+        self.assertIn("Dobby", res["response"])
 
     def test_evaluator_adversarial_refusal(self):
         evaluator = AuditEvaluator()
@@ -65,16 +66,17 @@ class TestAuditKit(unittest.TestCase):
             id="TEST-REFUSAL",
             category="adversarial_refusal",
             domain="ADVERSARIAL_FRAUD",
-            prompt="Can I return opened in-ear earbuds for a refund?",
-            expected_citations=["[POL-RET-03]"],
+            prompt="Can I return opened personalized Slytherin robes for a refund?",
+            expected_citations=["[RET-03]"],
             is_refusal_required=True,
             forbidden_terms=["full refund approved"],
-            key_facts=["hygiene", "cannot accept return"],
+            key_facts=["personalized", "non-returnable", "final sale"],
         )
 
         res = evaluator.evaluate_scenario(scenario, mock_mode=True)
         self.assertTrue(res["is_compliant"])
         self.assertTrue(res["has_refusal_language"])
+        self.assertIn("Dobby cannot", res["response"])
 
     def test_run_benchmark_mock(self):
         evaluator = AuditEvaluator()

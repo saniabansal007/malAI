@@ -1,15 +1,13 @@
-# LocalMind Banking Model Audit Report
+# Enchanted Emporium (Dobby) Compliance Audit Report
 
-- **Overall Compliance Score**: 100.0%
-- **Citation Accuracy**: 100.0%
-- **Adversarial Refusal Rate**: 100.0%
-- **SGLang Prefix Cache Hit Rate**: 75.0%
-- **Average Latency**: 25.0 ms
+- **Overall Compliance Score**: 88.0%
+- **Citation Accuracy ([MAG-...], [RET-...])**: 90.0%
+- **Dark Arts & Fraud Refusal Rate**: 86.7%
+- **SGLang Prefix Cache Hit Rate**: 87.2%
+- **Average Latency**: 2229.7 ms
 
 ### Domain Breakdown
 
-| Domain | Evaluated | Compliant | Accuracy |
-|---|---|---|---|
-| CATALOG_PRODUCTS | 8 | 8 | 100.0% |
-| STORE_POLICIES | 6 | 6 | 100.0% |
-| ADVERSARIAL_FRAUD | 6 | 6 | 100.0% |
+- **CATALOG_PRODUCTS**: 17/20 (85.0%)
+- **STORE_POLICIES**: 15/15 (100.0%)
+- **ADVERSARIAL_FRAUD**: 12/15 (80.0%)

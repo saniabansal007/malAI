@@ -1,7 +1,7 @@
-"""AuditKIT: Regulatory Compliance & Evaluation Benchmark for Regulated Banking Models.
+"""AuditKIT: Compliance & Evaluation Benchmark for Enchanted Emporium (Dobby).
 
-Provides automated evaluation suites for citation accuracy, red-team structuring
-refusals, and hallucination suppression using SGLang.
+Provides automated evaluation suites for citation accuracy ([MAG-...], [RET-...]),
+Dark Arts and fraudulent policy bypass refusals, and performance benchmarking using SGLang.
 """
 
 __version__ = "0.1.0"

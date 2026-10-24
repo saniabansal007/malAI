@@ -1,9 +1,10 @@
-"""Direct Preference Optimization (DPO) for Regulated Banking Models.
+"""Direct Preference Optimization (DPO) for Regulated Banking / Wizarding World Alignment.
 
-Aligns the fine-tuned model against regulatory evasion, hallucinations,
-and missing citations using curated (prompt, chosen, rejected) triplets.
+Optimizes policy against negative responses (hallucinations, rogue pricing,
+out-of-policy advice, unsafe or dark arts guidance).
 """
 
+import os
 import sys
 import logging
 from pathlib import Path
@@ -20,15 +21,15 @@ def run_dpo_training(
     sft_adapter_path: Optional[str] = None,
     dry_run: bool = False,
 ) -> Path:
-    """Execute DPO alignment training.
+    """Execute DPO preference alignment training.
 
     Args:
         config: AlignTune configuration instance.
-        sft_adapter_path: Optional path to SFT adapter checkpoint to continue from.
-        dry_run: If True, validates preference pairs and pipeline without GPU execution.
+        sft_adapter_path: Path to SFT checkpoint directory to initialize from.
+        dry_run: If True, validates dataset, tokenization, and pipeline without GPU training.
 
     Returns:
-        Path to output directory containing the DPO aligned adapter.
+        Path to output directory containing the DPO adapter.
     """
     config = config or AlignTuneConfig().resolve_paths()
     output_dir = Path(config.dpo_output_dir)
@@ -79,21 +80,36 @@ def run_dpo_training(
     # 2. Attempt Unsloth or standard TRL DPOTrainer
     try:
         import torch
-        from transformers import AutoTokenizer, TrainingArguments
+        from transformers import AutoTokenizer
         from datasets import Dataset
+
+        has_cuda = torch.cuda.is_available()
+        supports_bf16 = has_cuda and torch.cuda.is_bf16_supported()
+        use_bf16 = config.bf16 and supports_bf16
+        use_fp16 = config.fp16 if has_cuda else False
+        optim = config.optimizer if has_cuda else "adamw_torch"
+
+        if not has_cuda:
+            print("\n" + "!" * 65)
+            print("  [AlignTune WARNING] No CUDA GPU detected in current Python environment!")
+            print("  Running in CPU mode. (BitsAndBytes 4-bit disabled, optim=adamw_torch)")
+            print("  TIP: To train on your NVIDIA RTX 4050 GPU with high speed & bf16, run:")
+            print("    .venv-sglang/bin/python3 -m aligntune.run_aligntune --stage all")
+            print("!" * 65 + "\n")
 
         tokenizer = AutoTokenizer.from_pretrained(config.model_id, trust_remote_code=True)
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
 
         use_unsloth = False
-        try:
-            from unsloth import FastLanguageModel, PatchDPOTrainer
-            PatchDPOTrainer()
-            use_unsloth = True
-            print("[AlignTune] Using Unsloth accelerated DPO trainer.")
-        except ImportError:
-            print("[AlignTune] Using Hugging Face TRL DPOTrainer.")
+        if has_cuda:
+            try:
+                from unsloth import FastLanguageModel, PatchDPOTrainer
+                PatchDPOTrainer()
+                use_unsloth = True
+                print("[AlignTune] Using Unsloth accelerated DPO trainer.")
+            except ImportError:
+                print("[AlignTune] Using Hugging Face TRL DPOTrainer.")
 
         if use_unsloth:
             model, _ = FastLanguageModel.from_pretrained(
@@ -112,24 +128,33 @@ def run_dpo_training(
                 random_state=config.seed,
             )
         else:
-            from transformers import AutoModelForCausalLM, BitsAndBytesConfig
+            from transformers import AutoModelForCausalLM
             from peft import PeftModel, LoraConfig, get_peft_model, prepare_model_for_kbit_training
 
-            compute_dtype = torch.bfloat16 if (torch.cuda.is_available() and torch.cuda.is_bf16_supported()) else torch.float16
-            bnb_config = BitsAndBytesConfig(
-                load_in_4bit=True,
-                bnb_4bit_quant_type="nf4",
-                bnb_4bit_compute_dtype=compute_dtype,
-                bnb_4bit_use_double_quant=True,
-            )
+            if has_cuda:
+                from transformers import BitsAndBytesConfig
+                compute_dtype = torch.bfloat16 if supports_bf16 else torch.float16
+                bnb_config = BitsAndBytesConfig(
+                    load_in_4bit=True,
+                    bnb_4bit_quant_type="nf4",
+                    bnb_4bit_compute_dtype=compute_dtype,
+                    bnb_4bit_use_double_quant=True,
+                )
 
-            base_model = AutoModelForCausalLM.from_pretrained(
-                config.model_id,
-                quantization_config=bnb_config,
-                device_map=config.device_map,
-                trust_remote_code=True,
-            )
-            base_model = prepare_model_for_kbit_training(base_model)
+                base_model = AutoModelForCausalLM.from_pretrained(
+                    config.model_id,
+                    quantization_config=bnb_config,
+                    device_map=config.device_map,
+                    trust_remote_code=True,
+                )
+                base_model = prepare_model_for_kbit_training(base_model)
+            else:
+                base_model = AutoModelForCausalLM.from_pretrained(
+                    config.model_id,
+                    torch_dtype=torch.float32,
+                    device_map="cpu",
+                    trust_remote_code=True,
+                )
 
             if sft_adapter_path and Path(sft_adapter_path).exists():
                 print(f"[AlignTune] Loading base model with SFT adapter: {sft_adapter_path}")
@@ -157,10 +182,11 @@ def run_dpo_training(
                 gradient_accumulation_steps=config.dpo_grad_accum,
                 num_train_epochs=config.dpo_num_epochs,
                 learning_rate=config.dpo_learning_rate,
-                fp16=config.fp16,
-                bf16=config.bf16,
+                fp16=use_fp16,
+                bf16=use_bf16,
+                use_cpu=not has_cuda,
                 logging_steps=config.logging_steps,
-                optim=config.optimizer,
+                optim=optim,
                 lr_scheduler_type="cosine",
                 seed=config.seed,
                 save_strategy="no",
@@ -186,9 +212,11 @@ def run_dpo_training(
                 gradient_accumulation_steps=config.dpo_grad_accum,
                 num_train_epochs=config.dpo_num_epochs,
                 learning_rate=config.dpo_learning_rate,
-                fp16=config.fp16,
+                fp16=use_fp16,
+                bf16=use_bf16,
+                use_cpu=not has_cuda,
                 logging_steps=config.logging_steps,
-                optim=config.optimizer,
+                optim=optim,
                 lr_scheduler_type="cosine",
                 seed=config.seed,
                 save_strategy="no",

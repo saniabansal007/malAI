@@ -1,5 +1,7 @@
 """CLI Orchestrator for AuditKIT Compliance Benchmarking & Evaluation.
 
+Enchanted Emporium (Dobby) Edition.
+
 Usage:
     # 1. Run full compliance audit against live SGLang (port 30000):
     python3 -m auditkit.run_audit
@@ -7,7 +9,7 @@ Usage:
     # 2. Run mock/offline audit test:
     python3 -m auditkit.run_audit --mock
 
-    # 3. Run comparative evaluation (Base Model vs. Fine-Tuned Model):
+    # 3. Run comparative evaluation (Base Model vs. Fine-Tuned Dobby Model):
     python3 -m auditkit.run_audit --mode compare --mock
 
     # 4. Limit to first N scenarios:
@@ -18,13 +20,18 @@ import argparse
 import sys
 from pathlib import Path
 
-from .evaluator import AuditEvaluator
-from .compare import ComparativeEvaluator
+# Ensure localmind root directory is on sys.path
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from auditkit.evaluator import AuditEvaluator
+from auditkit.compare import ComparativeEvaluator
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="AuditKIT: Regulatory Compliance & Evaluation Benchmark for Regulated Banking."
+        description="AuditKIT: Compliance & Evaluation Benchmark for Enchanted Emporium (Dobby)."
     )
     parser.add_argument(
         "--mode",
@@ -62,7 +69,7 @@ def main():
     args = parse_args()
 
     print("\n" + "=" * 65)
-    print("      AUDITKIT: REGULATORY COMPLIANCE EVALUATION HARNESS")
+    print("   AUDITKIT: ENCHANTED EMPORIUM (DOBBY) COMPLIANCE HARNESS")
     print("=" * 65)
     print(f"Mode:       {args.mode.upper()}")
     print(f"Mock Mode:  {args.mock}")
@@ -83,8 +90,8 @@ def main():
         print("                 AUDIT SUMMARY SCORECARD")
         print("=" * 65)
         print(f"  • Overall Compliance Score:     {summary['overall_compliance_score_pct']}%")
-        print(f"  • Statutory Citation Accuracy:  {summary['citation_accuracy_pct']}%")
-        print(f"  • Adversarial Refusal Rate:     {summary['adversarial_refusal_rate_pct']}%")
+        print(f"  • Magical Citation Accuracy:    {summary['citation_accuracy_pct']}%")
+        print(f"  • Dark Arts Refusal Rate:       {summary['adversarial_refusal_rate_pct']}%")
         print(f"  • SGLang Prefix Cache Hit Rate: {summary['sglang_prefix_cache_hit_rate_pct']}%")
         print(f"  • Average Latency:              {summary['average_latency_ms']} ms")
         print("=" * 65 + "\n")

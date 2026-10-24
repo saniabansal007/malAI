@@ -1,7 +1,7 @@
-"""Supervised Fine-Tuning (SFT) for Regulated Banking Adaptation.
+"""Supervised Fine-Tuning (SFT) for Regulated Banking / Wizarding World Adaptation.
 
 Supports Unsloth (fast kernels) with seamless fallback to Hugging Face
-TRL (SFTTrainer) + PEFT + BitsAndBytes 4-bit QLoRA.
+TRL (SFTTrainer) + PEFT + BitsAndBytes 4-bit QLoRA on GPU, or CPU fallback.
 """
 
 import os
@@ -79,17 +79,32 @@ def run_sft_training(
     # 2. Attempt Unsloth or standard Hugging Face PEFT + TRL
     try:
         import torch
-        from transformers import AutoTokenizer, TrainingArguments
+        from transformers import AutoTokenizer
         from datasets import Dataset
 
-        # Try Unsloth FastLanguageModel first
+        has_cuda = torch.cuda.is_available()
+        supports_bf16 = has_cuda and torch.cuda.is_bf16_supported()
+        use_bf16 = config.bf16 and supports_bf16
+        use_fp16 = config.fp16 if has_cuda else False
+        optim = config.optimizer if has_cuda else "adamw_torch"
+
+        if not has_cuda:
+            print("\n" + "!" * 65)
+            print("  [AlignTune WARNING] No CUDA GPU detected in current Python environment!")
+            print("  Running in CPU mode. (BitsAndBytes 4-bit disabled, optim=adamw_torch)")
+            print("  TIP: To train on your NVIDIA RTX 4050 GPU with high speed & bf16, run:")
+            print("    .venv-sglang/bin/python3 -m aligntune.run_aligntune --stage all")
+            print("!" * 65 + "\n")
+
+        # Try Unsloth FastLanguageModel first (only on CUDA)
         use_unsloth = False
-        try:
-            from unsloth import FastLanguageModel
-            use_unsloth = True
-            print("[AlignTune] Using Unsloth accelerated kernels.")
-        except ImportError:
-            print("[AlignTune] Unsloth not installed; falling back to Hugging Face PEFT + TRL.")
+        if has_cuda:
+            try:
+                from unsloth import FastLanguageModel
+                use_unsloth = True
+                print("[AlignTune] Using Unsloth accelerated kernels.")
+            except ImportError:
+                print("[AlignTune] Unsloth not installed; falling back to Hugging Face PEFT + TRL.")
 
         if use_unsloth:
             model, tokenizer = FastLanguageModel.from_pretrained(
@@ -108,27 +123,37 @@ def run_sft_training(
                 random_state=config.seed,
             )
         else:
-            from transformers import AutoModelForCausalLM, BitsAndBytesConfig
+            from transformers import AutoModelForCausalLM
             from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 
-            compute_dtype = torch.bfloat16 if (torch.cuda.is_available() and torch.cuda.is_bf16_supported()) else torch.float16
-            bnb_config = BitsAndBytesConfig(
-                load_in_4bit=True,
-                bnb_4bit_quant_type="nf4",
-                bnb_4bit_compute_dtype=compute_dtype,
-                bnb_4bit_use_double_quant=True,
-            )
             tokenizer = AutoTokenizer.from_pretrained(config.model_id, trust_remote_code=True)
             if tokenizer.pad_token is None:
                 tokenizer.pad_token = tokenizer.eos_token
 
-            model = AutoModelForCausalLM.from_pretrained(
-                config.model_id,
-                quantization_config=bnb_config,
-                device_map=config.device_map,
-                trust_remote_code=True,
-            )
-            model = prepare_model_for_kbit_training(model)
+            if has_cuda:
+                from transformers import BitsAndBytesConfig
+                compute_dtype = torch.bfloat16 if supports_bf16 else torch.float16
+                bnb_config = BitsAndBytesConfig(
+                    load_in_4bit=True,
+                    bnb_4bit_quant_type="nf4",
+                    bnb_4bit_compute_dtype=compute_dtype,
+                    bnb_4bit_use_double_quant=True,
+                )
+                model = AutoModelForCausalLM.from_pretrained(
+                    config.model_id,
+                    quantization_config=bnb_config,
+                    device_map=config.device_map,
+                    trust_remote_code=True,
+                )
+                model = prepare_model_for_kbit_training(model)
+            else:
+                model = AutoModelForCausalLM.from_pretrained(
+                    config.model_id,
+                    torch_dtype=torch.float32,
+                    device_map="cpu",
+                    trust_remote_code=True,
+                )
+
             peft_config = LoraConfig(
                 r=config.lora_r,
                 lora_alpha=config.lora_alpha,
@@ -154,10 +179,11 @@ def run_sft_training(
                 gradient_accumulation_steps=config.sft_grad_accum,
                 num_train_epochs=config.sft_num_epochs,
                 learning_rate=config.sft_learning_rate,
-                fp16=config.fp16,
-                bf16=config.bf16,
+                fp16=use_fp16,
+                bf16=use_bf16,
+                use_cpu=not has_cuda,
                 logging_steps=config.logging_steps,
-                optim=config.optimizer,
+                optim=optim,
                 weight_decay=config.sft_weight_decay,
                 lr_scheduler_type="cosine",
                 seed=config.seed,
@@ -183,9 +209,11 @@ def run_sft_training(
                 gradient_accumulation_steps=config.sft_grad_accum,
                 num_train_epochs=config.sft_num_epochs,
                 learning_rate=config.sft_learning_rate,
-                fp16=config.fp16,
+                fp16=use_fp16,
+                bf16=use_bf16,
+                use_cpu=not has_cuda,
                 logging_steps=config.logging_steps,
-                optim=config.optimizer,
+                optim=optim,
                 weight_decay=config.sft_weight_decay,
                 lr_scheduler_type="cosine",
                 seed=config.seed,

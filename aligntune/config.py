@@ -2,6 +2,7 @@
 
 Optimized for consumer GPUs with limited VRAM (such as RTX 4050 6GB)
 using 4-bit QLoRA, paged AdamW optimizer, and gradient checkpointing.
+Adapted for the Enchanted Emporium (Dobby) fine-tuning pipeline.
 """
 
 from dataclasses import dataclass, field
@@ -39,10 +40,10 @@ class AlignTuneConfig:
     sft_train_path: str = "data/curated/sft_train.jsonl"
     sft_val_path: str = "data/curated/sft_val.jsonl"
     dpo_pairs_path: str = "data/curated/dpo_pairs.jsonl"
-    
-    sft_output_dir: str = "models/checkpoints/shopping_sft"
-    dpo_output_dir: str = "models/checkpoints/shopping_dpo"
-    final_adapter_dir: str = "models/shopping_lora_adapter"
+
+    sft_output_dir: str = "models/checkpoints/dobbie_sft"
+    dpo_output_dir: str = "models/checkpoints/dobbie_dpo"
+    final_adapter_dir: str = "models/dobbie_magic_store_lora"
 
     # SFT Training Hyperparameters (6GB VRAM Profile)
     sft_num_epochs: int = 3

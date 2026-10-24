@@ -1,0 +1,34 @@
+{
+  "model_name": "Enchanted Emporium Dobby AI Shopping Assistant",
+  "base_model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "adapter_type": "LoRA (4-bit QLoRA)",
+  "r": 16,
+  "alpha": 32,
+  "target_modules": [
+    "q_proj",
+    "k_proj",
+    "v_proj",
+    "o_proj",
+    "gate_proj",
+    "up_proj",
+    "down_proj"
+  ],
+  "domain": "Enchanted Emporium Wizarding Product Catalog & Store Policies (Galleon Pricing, Owl Post, Robe Customization, Dark Arts Refusals)",
+  "citation_handles": [
+    "MAG-WAND-001",
+    "MAG-BROOM-001",
+    "MAG-ROB-GRY-001",
+    "MAG-CAUL-001",
+    "RET-01",
+    "RET-03",
+    "SHIP-01",
+    "PRICE-01",
+    "ESC-01"
+  ],
+  "training_stages": {
+    "stage_1": "CuratorKIT Enchanted Emporium Curation (154 Verified Grounded Samples)",
+    "stage_2_sft": "Supervised Fine-Tuning with ChatML Prompt Formatting",
+    "stage_2_dpo": "Direct Preference Optimization against Hallucinations, Fake Galleon Discounts & Dark Arts"
+  },
+  "sglang_serving_argument": "--lora-paths dobbie_adapter=/home/sania/localmind/models/dobbie_magic_store_lora"
+}

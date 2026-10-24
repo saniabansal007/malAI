@@ -1,5 +1,7 @@
 """CLI Driver for AlignTune Finetuning & Alignment Pipeline.
 
+Enchanted Emporium (Dobby) Edition.
+
 Usage:
     # Full dry-run validation (no GPU required):
     python3 -m aligntune.run_aligntune --dry-run
@@ -21,20 +23,25 @@ import argparse
 import sys
 from pathlib import Path
 
-from .config import AlignTuneConfig
-from .dataset_loader import (
+# Ensure localmind root directory is on sys.path
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from aligntune.config import AlignTuneConfig
+from aligntune.dataset_loader import (
     load_sft_dataset,
     load_dpo_dataset,
     get_dataset_statistics,
 )
-from .train_sft import run_sft_training
-from .train_dpo import run_dpo_training
-from .export_lora import export_lora_adapter
+from aligntune.train_sft import run_sft_training
+from aligntune.train_dpo import run_dpo_training
+from aligntune.export_lora import export_lora_adapter
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="AlignTune: SFT & DPO Domain Adaptation for Regulated Banking Models."
+        description="AlignTune: SFT & DPO Domain Adaptation for Enchanted Emporium (Dobby)."
     )
     parser.add_argument(
         "--stage",
@@ -104,7 +111,7 @@ def main():
         return
 
     print("\n" + "=" * 65)
-    print("      ALIGNTUNE: DOMAIN ADAPTATION & REGULATORY ALIGNMENT")
+    print("   ALIGNTUNE: ENCHANTED EMPORIUM (DOBBY) DOMAIN ALIGNMENT")
     print("=" * 65)
 
     sft_adapter_path = None

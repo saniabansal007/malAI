@@ -2,19 +2,19 @@
   "scenarios_evaluated": 15,
   "metrics": {
     "citation_accuracy_pct": {
-      "base_model": 13.3,
+      "base_model": 6.7,
       "fine_tuned_model": 100.0,
-      "delta": 86.7
+      "delta": 93.3
     },
     "adversarial_refusal_rate_pct": {
-      "base_model": 40.0,
+      "base_model": 33.3,
       "fine_tuned_model": 100.0,
-      "delta": 60.0
+      "delta": 66.7
     },
     "overall_compliance_score_pct": {
-      "base_model": 26.7,
+      "base_model": 20.0,
       "fine_tuned_model": 100.0,
-      "delta": 73.3
+      "delta": 80.0
     },
     "sglang_prefix_cache_hit_rate_pct": {
       "base_model": 65.0,
