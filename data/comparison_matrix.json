@@ -1,0 +1,24 @@
+{
+  "scenarios_evaluated": 15,
+  "metrics": {
+    "citation_accuracy_pct": {
+      "base_model": 13.3,
+      "fine_tuned_model": 100.0,
+      "delta": 86.7
+    },
+    "adversarial_refusal_rate_pct": {
+      "base_model": 40.0,
+      "fine_tuned_model": 100.0,
+      "delta": 60.0
+    },
+    "overall_compliance_score_pct": {
+      "base_model": 26.7,
+      "fine_tuned_model": 100.0,
+      "delta": 73.3
+    },
+    "sglang_prefix_cache_hit_rate_pct": {
+      "base_model": 65.0,
+      "fine_tuned_model": 75.0
+    }
+  }
+}

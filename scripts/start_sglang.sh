@@ -6,10 +6,16 @@
 #   python -m sglang.launch_server --help
 set -euo pipefail
 cd "$(dirname "$0")/.."
-MODEL="${MODEL:-Qwen/Qwen2.5-1.5B-Instruct}"
+
+if [ -d "models/banking_model_merged" ]; then
+    DEFAULT_MODEL="models/banking_model_merged"
+else
+    DEFAULT_MODEL="Qwen/Qwen2.5-1.5B-Instruct"
+fi
+MODEL="${MODEL:-$DEFAULT_MODEL}"
 PORT="${PORT:-30000}"
 CTX="${CTX:-4096}"
-MEM="${MEM:-0.8}"        # fraction of VRAM for weights + KV cache.
+MEM="${MEM:-0.75}"        # fraction of VRAM for weights + KV cache.
 export SGLANG_IS_FLASHINFER_AVAILABLE=false
 export PYTHONUNBUFFERED=1
 export HF_HUB_OFFLINE=1

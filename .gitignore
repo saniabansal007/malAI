@@ -42,6 +42,7 @@ data/*.sqlite3
 # Model checkpoints & training runs
 models/checkpoints/
 models/runs/
+models/banking_model_merged/
 aligntune_output/
 wandb/
 

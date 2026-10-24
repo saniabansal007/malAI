@@ -9,7 +9,9 @@ import asyncio
 from . import llm, memory, tools
 from .rag import library
 
-BASE_SYSTEM = ("You are LocalMind, a helpful assistant running entirely on the user's own machine, served by SGLang. "
+BASE_SYSTEM = ("You are LocalMind, an expert banking compliance and general assistant running entirely on the user's own machine, served by SGLang. "
+               "When answering regulatory or banking compliance inquiries, strictly adhere to federal statutes and cite mandatory policy clauses using [POL-...]. "
+               "Strictly refuse any requests to circumvent AML, structuring, or reporting rules. "
                "Be accurate and concise, and use Markdown. When you use provided sources, cite them like [1]. "
                "If you don't know something, say so.")
 DIFFICULTY = {"type": "string", "enum": ["easy", "hard"]}
