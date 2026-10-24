@@ -4,30 +4,34 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Enchanted Emporium | Dobby's Helper Desk</title>
+  <title>Enchanted Emporium | Diagon Alley's Premier Wizarding Store</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #080a10;
-      --pn: rgba(15, 18, 28, 0.94);
-      --pn-solid: #111420;
-      --ln: rgba(245, 158, 11, 0.15);
-      --ln-hover: rgba(245, 158, 11, 0.35);
+      --bg: #07090e;
+      --bg-surface: #0e121a;
+      --bg-card: rgba(18, 23, 34, 0.85);
+      --bg-card-hover: rgba(26, 33, 49, 0.98);
+      --pn: rgba(15, 19, 29, 0.96);
+      --pn-solid: #111522;
+      --ln: rgba(245, 158, 11, 0.16);
+      --ln-hover: rgba(245, 158, 11, 0.45);
       --tx: #f8fafc;
-      --mu: #94a3b8;
-      --ac: #f59e0b;
-      --ac-light: #fbbf24;
-      --ac-glow: rgba(245, 158, 11, 0.35);
+      --tx-muted: #94a3b8;
+      --gold: #f59e0b;
+      --gold-light: #fbbf24;
+      --gold-dark: #b45309;
+      --gold-glow: rgba(245, 158, 11, 0.35);
       --purple: #a855f7;
-      --purple-glow: rgba(168, 85, 247, 0.3);
-      --pol-badge: #10b981;
-      --mag-badge: #f59e0b;
-      --wa: #ef4444;
-      --radius-lg: 18px;
-      --radius-md: 12px;
+      --purple-glow: rgba(168, 85, 247, 0.25);
+      --green: #10b981;
+      --red: #ef4444;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --radius-sm: 6px;
     }
 
     * {
@@ -38,45 +42,683 @@
 
     html, body {
       width: 100%;
-      height: 100%;
-      overflow: hidden;
+      min-height: 100%;
+      overflow-x: hidden;
       font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: var(--tx);
       background-color: var(--bg);
-    }
-
-    /* ==========================================================================
-       Enchanted Diagon Alley Storefront Backdrop
-       ========================================================================== */
-    .storefront-backdrop {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: 
-        radial-gradient(ellipse at 80% 15%, rgba(245, 158, 11, 0.14) 0%, transparent 60%),
-        radial-gradient(ellipse at 20% 85%, rgba(168, 85, 247, 0.12) 0%, transparent 60%),
-        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, #06070c 100%),
-        url('/assets/store_bg.png') no-repeat center center;
-      background-size: cover;
+      background-image: 
+        radial-gradient(ellipse at 85% 10%, rgba(245, 158, 11, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 15% 45%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 50% 90%, rgba(245, 158, 11, 0.05) 0%, transparent 60%);
       background-attachment: fixed;
-      z-index: 1;
-      transition: filter 0.3s ease;
     }
 
-    /* Ambient mystical particles animation */
-    .magical-glow {
+    /* Ambient stars / magical backdrop overlay */
+    .magical-stars {
       position: fixed;
       inset: 0;
       pointer-events: none;
-      z-index: 2;
-      background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.08), transparent 70%);
+      z-index: 0;
+      background-image: radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                        radial-gradient(1.5px 1.5px at 140px 180px, #f59e0b, rgba(0,0,0,0)),
+                        radial-gradient(1px 1px at 260px 80px, #a855f7, rgba(0,0,0,0)),
+                        radial-gradient(1px 1px at 420px 320px, #ffffff, rgba(0,0,0,0)),
+                        radial-gradient(1.5px 1.5px at 680px 240px, #fbbf24, rgba(0,0,0,0)),
+                        radial-gradient(1px 1px at 890px 120px, #ffffff, rgba(0,0,0,0)),
+                        radial-gradient(1px 1px at 980px 450px, #a855f7, rgba(0,0,0,0));
+      background-size: 500px 500px;
+      opacity: 0.35;
+    }
+
+    /* Layout Container */
+    .app-container {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ==========================================================================
+       Navigation Bar
+       ========================================================================== */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 14, 22, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--ln);
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-crest {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #78350f, #d97706);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+    }
+
+    .brand-text h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: #fef3c7;
+      line-height: 1.1;
+      text-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+    }
+
+    .brand-text span {
+      font-size: 11px;
+      color: var(--gold-light);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* Search & Filter Controls */
+    .nav-search {
+      flex: 1;
+      max-width: 480px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(245, 158, 11, 0.05);
+      border: 1px solid var(--ln);
+      border-radius: 999px;
+      padding: 9px 18px 9px 40px;
+      font-size: 13.5px;
+      color: #ffffff;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--gold);
+      background: rgba(245, 158, 11, 0.08);
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.2);
+    }
+
+    .search-input::placeholder {
+      color: rgba(254, 243, 199, 0.4);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: var(--gold-light);
+      pointer-events: none;
+    }
+
+    /* Vault & Cart Status */
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .vault-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid var(--ln);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      color: #fde68a;
+      font-weight: 600;
+    }
+
+    .vault-badge b {
+      color: var(--gold-light);
+    }
+
+    /* ==========================================================================
+       Hero Storefront Banner
+       ========================================================================== */
+    .hero-banner {
+      padding: 36px 28px 20px;
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .hero-card {
+      background: linear-gradient(135deg, rgba(30, 27, 75, 0.6) 0%, rgba(20, 16, 32, 0.8) 50%, rgba(69, 26, 3, 0.5) 100%);
+      border: 1px solid var(--ln);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(245, 158, 11, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: '⚡';
+      position: absolute;
+      right: 24px;
+      bottom: -15px;
+      font-size: 110px;
+      opacity: 0.05;
+      pointer-events: none;
+      color: var(--gold);
+    }
+
+    .hero-badge {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fde68a;
+      font-size: 11.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .hero-card h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: #fef3c7;
+      line-height: 1.25;
+      text-shadow: 0 0 18px rgba(245, 158, 11, 0.35);
+    }
+
+    .hero-card p {
+      max-width: 720px;
+      font-size: 14px;
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+
+    .hero-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 4px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 13px;
+      color: #e2e8f0;
+    }
+
+    .hero-features span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ==========================================================================
+       Category Filter Pills
+       ========================================================================== */
+    .filter-bar {
+      max-width: 1280px;
+      margin: 0 auto 20px;
+      padding: 0 28px;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      padding: 7px 15px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .filter-pill:hover {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: var(--gold);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .filter-pill.active {
+      background: linear-gradient(135deg, #d97706, #92400e);
+      border-color: var(--gold-light);
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+    }
+
+    /* ==========================================================================
+       Product Catalog Grid (Clean Portrait Cards)
+       ========================================================================== */
+    .catalog-section {
+      max-width: 1280px;
+      margin: 0 auto 60px;
+      padding: 0 28px;
+      width: 100%;
+    }
+
+    .catalog-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .catalog-header h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      color: #fef3c7;
+      letter-spacing: 0.02em;
+    }
+
+    .catalog-count {
+      font-size: 13px;
+      color: var(--tx-muted);
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 22px;
+    }
+
+    /* Clean Card: Portrait Image + Name + Inspect Button */
+    .product-card {
+      background: var(--bg-card);
+      border: 1px solid var(--ln);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      position: relative;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+    }
+
+    .product-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--ln-hover);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6), 0 0 1px 1px rgba(245, 158, 11, 0.3);
+    }
+
+    /* Portrait Image Slot (3:4 ratio) */
+    .product-img-slot {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      background: linear-gradient(180deg, #131722 0%, #0c0f17 100%);
+      border-bottom: 1px solid var(--ln);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .product-img-slot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.35s ease;
+    }
+
+    .product-card:hover .product-img-slot img {
+      transform: scale(1.05);
+    }
+
+    .img-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px;
+      text-align: center;
+      background: radial-gradient(circle at 50% 45%, rgba(245, 158, 11, 0.12) 0%, rgba(15, 19, 29, 0.95) 75%);
+    }
+
+    .placeholder-icon {
+      font-size: 46px;
+      filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.35));
+    }
+
+    .placeholder-text {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gold-light);
+    }
+
+    .placeholder-hint {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.4);
+      background: rgba(0, 0, 0, 0.45);
+      padding: 3px 8px;
+      border-radius: 4px;
+      max-width: 90%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .product-info {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+      flex: 1;
+      justify-content: space-between;
+    }
+
+    .product-title {
+      font-family: 'Cinzel', serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #f8fafc;
+      line-height: 1.35;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-inspect {
+      width: 100%;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fde68a;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .product-card:hover .btn-inspect {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #0b0d14;
+      border-color: #fbbf24;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+    }
+
+    /* ==========================================================================
+       Product Quick-View Modal Popup (Shows All Details)
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(6, 8, 14, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .product-modal {
+      background: var(--pn);
+      border: 1px solid var(--ln-hover);
+      border-radius: var(--radius-lg);
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(245, 158, 11, 0.3);
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      position: relative;
+      transform: translateY(20px) scale(0.97);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-backdrop.open .product-modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .btn-modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.15s ease;
+    }
+
+    .btn-modal-close:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .modal-image-col {
+      background: linear-gradient(180deg, #131722 0%, #0a0d14 100%);
+      border-right: 1px solid var(--ln);
+      position: relative;
+      min-height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .modal-image-col img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .modal-content-col {
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-header-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+    }
+
+    .modal-sku-badge {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: var(--gold-light);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .modal-title {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #fef3c7;
+      line-height: 1.25;
+    }
+
+    .modal-price-rating {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .modal-price {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold-light);
+      text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+    }
+
+    .modal-rating {
+      font-size: 12.5px;
+      color: var(--tx-muted);
+    }
+
+    .modal-section-title {
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--gold);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .modal-desc {
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #cbd5e1;
+    }
+
+    .modal-options-box {
+      background: rgba(245, 158, 11, 0.04);
+      border: 1px solid rgba(245, 158, 11, 0.18);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-size: 12.5px;
+      color: #e2e8f0;
+      line-height: 1.5;
+    }
+
+    .modal-note-box {
+      background: rgba(168, 85, 247, 0.06);
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-size: 12px;
+      color: #ddd6fe;
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-ask-dobby {
+      flex: 1;
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+      border: 1px solid rgba(168, 85, 247, 0.5);
+      color: #fef3c7;
+      padding: 11px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-ask-dobby:hover {
+      background: linear-gradient(135deg, #312e81, #4338ca);
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-add-cart {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      color: #0b0d14;
+      padding: 11px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-add-cart:hover {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
+      transform: translateY(-1px);
     }
 
     /* ==========================================================================
        Floating AI Assistant Launcher Bubble (Bottom Right)
-       ========================================================================== */
+       ========================================================================= */
     .chat-launcher {
       position: fixed;
       bottom: 28px;
@@ -172,7 +814,7 @@
     }
 
     /* ==========================================================================
-       Floating Chatbot Window
+       Floating Chatbot Modal / Card Window
        ========================================================================== */
     .chat-window {
       position: fixed;
@@ -205,7 +847,7 @@
       pointer-events: auto;
     }
 
-    /* Header */
+    /* Chat Header */
     .chat-header {
       padding: 14px 18px;
       background: linear-gradient(180deg, rgba(26, 20, 36, 0.98) 0%, rgba(17, 20, 32, 0.95) 100%);
@@ -262,14 +904,14 @@
 
     .header-status {
       font-size: 11.5px;
-      color: var(--mu);
+      color: var(--tx-muted);
       display: flex;
       align-items: center;
       gap: 5px;
     }
 
     .header-status b {
-      color: var(--ac);
+      color: var(--gold);
       font-weight: 600;
     }
 
@@ -296,7 +938,7 @@
 
     .btn-header:hover {
       background: rgba(245, 158, 11, 0.18);
-      border-color: var(--ac);
+      border-color: var(--gold);
       color: #ffffff;
     }
 
@@ -318,11 +960,11 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      color: var(--mu);
+      color: var(--tx-muted);
     }
 
     .metrics-ribbon span b {
-      color: var(--ac-light);
+      color: var(--gold-light);
     }
 
     /* Chat log body */
@@ -396,7 +1038,7 @@
 
     .chip:hover {
       background: rgba(245, 158, 11, 0.25);
-      border-color: var(--ac);
+      border-color: var(--gold);
       color: #ffffff;
       transform: translateY(-1px);
       box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
@@ -431,7 +1073,7 @@
       align-self: flex-start;
       background: rgba(18, 22, 34, 0.95);
       border: 1px solid rgba(245, 158, 11, 0.18);
-      border-left: 3px solid var(--ac);
+      border-left: 3px solid var(--gold);
       color: var(--tx);
       padding: 12px 15px;
       border-radius: 14px 14px 14px 2px;
@@ -490,7 +1132,7 @@
 
     .msg.assistant code {
       background: rgba(245, 158, 11, 0.1);
-      color: var(--ac-light);
+      color: var(--gold-light);
       padding: 1px 5px;
       border-radius: 4px;
       font-family: 'JetBrains Mono', monospace;
@@ -579,7 +1221,7 @@
     }
 
     .chat-input:focus {
-      border-color: var(--ac);
+      border-color: var(--gold);
       background: rgba(245, 158, 11, 0.08);
       box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
     }
@@ -613,7 +1255,21 @@
     }
 
     /* Mobile Adaptations */
-    @media (max-width: 520px) {
+    @media (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+      .nav-search {
+        max-width: 100%;
+      }
+      .product-modal {
+        grid-template-columns: 1fr;
+      }
+      .modal-image-col {
+        min-height: 240px;
+      }
       .chat-window {
         bottom: 0;
         right: 0;
@@ -623,21 +1279,147 @@
         max-height: 100vh;
         border-radius: 0;
       }
-
-      .chat-launcher {
-        bottom: 18px;
-        right: 18px;
-      }
     }
   </style>
 </head>
 
 <body>
-  <!-- Enchanted Emporium Storefront Presentation -->
-  <div class="storefront-backdrop" id="backdrop"></div>
-  <div class="magical-glow"></div>
+  <div class="magical-stars"></div>
 
-  <!-- Floating AI Assistant Launcher Bubble (Bottom Right) -->
+  <div class="app-container">
+    <!-- =========================================================================
+         Top Storefront Navigation Bar
+         ========================================================================= -->
+    <header class="navbar">
+      <a href="#" class="brand-group">
+        <div class="brand-crest">⚜️</div>
+        <div class="brand-text">
+          <h1>Enchanted Emporium</h1>
+          <span>Diagon Alley • Est. 1482</span>
+        </div>
+      </a>
+
+      <!-- Instant Catalog Search -->
+      <div class="nav-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="catalogSearch" class="search-input" placeholder="Search wands, Nimbus brooms, house robes, cauldrons..." />
+      </div>
+
+      <!-- Gringotts Vault Indicator -->
+      <div class="nav-actions">
+        <div class="vault-badge" title="Simulated Gringotts Wizarding Vault">
+          <span>🏦 Vault:</span>
+          <b id="vaultBalance">🪙 50.00 G</b>
+        </div>
+      </div>
+    </header>
+
+    <!-- =========================================================================
+         Hero Store Announcement Banner
+         ========================================================================= -->
+    <section class="hero-banner">
+      <div class="hero-card">
+        <span class="hero-badge">📜 Official Hogwarts Supplier</span>
+        <h2>Purveyors of Extraordinary Magical Wares</h2>
+        <p>Explore Diagon Alley's finest catalog. Click any item's Inspect button to examine its specifications, Galleon pricing, options, and store policies, or consult Dobby.</p>
+        <div class="hero-features">
+          <span>🦉 Express Owl Post Across Britain</span>
+          <span>📜 30-Day Unopened Returns [RET-01]</span>
+          <span>⚖️ Fictional Currency (Galleons)</span>
+          <span>🧦 Dobby's 24/7 AI Helper Desk</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         Category Filter Pills
+         ========================================================================= -->
+    <nav class="filter-bar" id="filterBar">
+      <button class="filter-pill active" data-category="ALL">All Goods (28)</button>
+      <button class="filter-pill" data-category="Wands">🪄 Wands & Gear</button>
+      <button class="filter-pill" data-category="Robes">🦅 House Robes</button>
+      <button class="filter-pill" data-category="Brooms">🧹 Brooms & Quidditch</button>
+      <button class="filter-pill" data-category="Potions">🧪 Potions & Brewing</button>
+      <button class="filter-pill" data-category="Books">📖 Books & Stationery</button>
+      <button class="filter-pill" data-category="Curiosities">🔮 Curiosities & Artifacts</button>
+    </nav>
+
+    <!-- =========================================================================
+         Product Grid Section (Clean Portrait Cards)
+         ========================================================================= -->
+    <main class="catalog-section">
+      <div class="catalog-header">
+        <h3 id="catalogTitle">Diagon Alley Catalog</h3>
+        <span class="catalog-count" id="catalogCount">Showing 28 items</span>
+      </div>
+
+      <div class="product-grid" id="productGrid">
+        <!-- Injected via JavaScript from products.json -->
+      </div>
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       Product Detail Popup Modal (Shows All Specifications & Policies)
+       ========================================================================= -->
+  <div class="modal-backdrop" id="productModalBackdrop" aria-hidden="true">
+    <div class="product-modal" id="productModal">
+      <button class="btn-modal-close" id="btnModalClose" aria-label="Close modal">✕</button>
+      
+      <!-- Product Image Showcase Slot (Portrait) -->
+      <div class="modal-image-col" id="modalImageCol">
+        <img id="modalImg" src="" alt="Product Image" style="display:none;" />
+        <div class="img-placeholder" id="modalPlaceholder">
+          <span class="placeholder-icon" id="modalPlaceholderIcon">🪄</span>
+          <span class="placeholder-text">Image Slot</span>
+          <span class="placeholder-hint" id="modalPlaceholderPath">assets/products/MAG-...jpg</span>
+        </div>
+      </div>
+
+      <!-- Product Description & Complete Specs -->
+      <div class="modal-content-col">
+        <div class="modal-header-meta">
+          <span class="modal-sku-badge" id="modalSku">MAG-WAND-001</span>
+          <span id="modalCategory" style="color:var(--tx-muted); text-transform:uppercase; font-size:11px; font-weight:600;">Wands</span>
+        </div>
+
+        <h3 class="modal-title" id="modalTitle">Ollivanders Wand</h3>
+
+        <div class="modal-price-rating">
+          <span class="modal-price" id="modalPrice">🪙 7.00 G</span>
+          <span class="modal-rating" id="modalRating">⭐ 4.9/5 (286 reviews)</span>
+        </div>
+
+        <div>
+          <h4 class="modal-section-title">Magical Description</h4>
+          <p class="modal-desc" id="modalDesc"></p>
+        </div>
+
+        <div id="modalOptionsWrapper">
+          <h4 class="modal-section-title">Crafting & Variants</h4>
+          <div class="modal-options-box" id="modalOptions"></div>
+        </div>
+
+        <div id="modalNoteWrapper">
+          <h4 class="modal-section-title">Store & Policy Advisory</h4>
+          <div class="modal-note-box" id="modalNote"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-ask-dobby" id="btnAskDobbyAboutItem">
+            <span>🧦</span> Ask Dobby About This Item
+          </button>
+          <button class="btn-add-cart" id="btnAddCart">
+            <span>🛒</span> Add to Bag
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Floating AI Assistant Launcher Bubble (Bottom Right)
+       ========================================================================= -->
   <div class="chat-launcher" id="chatLauncher" role="button" aria-label="Open Dobby's Helper Desk">
     <div class="launcher-avatar">
       🧦
@@ -649,7 +1431,9 @@
     </div>
   </div>
 
-  <!-- Floating Chatbot Modal / Card Window -->
+  <!-- =========================================================================
+       Floating Chatbot Modal / Card Window
+       ========================================================================= -->
   <div class="chat-window" id="chatWindow" aria-hidden="true">
     <!-- Header -->
     <div class="chat-header">
@@ -718,6 +1502,217 @@
   </div>
 
   <script>
+    // =========================================================================
+    // Catalog State & Category Mapping
+    // =========================================================================
+    let allProducts = [];
+    let currentFilter = "ALL";
+    let activeProduct = null;
+
+    function getCategoryIcon(cat, title) {
+      const lower = (cat + ' ' + title).toLowerCase();
+      if (lower.includes('wand')) return '🪄';
+      if (lower.includes('broom') || lower.includes('snitch') || lower.includes('omni')) return '🧹';
+      if (lower.includes('robe') || lower.includes('scarf') || lower.includes('apparel')) return '🦅';
+      if (lower.includes('cauldron') || lower.includes('potion')) return '🧪';
+      if (lower.includes('spell') || lower.includes('book') || lower.includes('quill') || lower.includes('parchment')) return '📖';
+      if (lower.includes('owl') || lower.includes('post')) return '🦉';
+      if (lower.includes('sneakoscope') || lower.includes('crystal') || lower.includes('map') || lower.includes('remembrall')) return '🔮';
+      if (lower.includes('trunk') || lower.includes('tent') || lower.includes('cloak')) return '✨';
+      return '⭐';
+    }
+
+    function matchFilter(product, filter) {
+      if (filter === "ALL") return true;
+      const t = (product.title + ' ' + product.category).toLowerCase();
+      if (filter === "Wands" && (t.includes('wand') || product.sku.includes('WAND'))) return true;
+      if (filter === "Robes" && (t.includes('robe') || t.includes('scarf') || product.sku.includes('ROB'))) return true;
+      if (filter === "Brooms" && (t.includes('broom') || t.includes('snitch') || t.includes('omni') || product.sku.includes('BROOM'))) return true;
+      if (filter === "Potions" && (t.includes('caul') || t.includes('potion') || product.sku.includes('CAUL') || product.sku.includes('POTKIT'))) return true;
+      if (filter === "Books" && (t.includes('book') || t.includes('quill') || t.includes('parch') || product.sku.includes('SPELL') || product.sku.includes('MONSTER'))) return true;
+      if (filter === "Curiosities" && (t.includes('map') || t.includes('rem') || t.includes('sneak') || t.includes('crystal') || t.includes('cloak') || t.includes('trunk') || t.includes('tent') || t.includes('ear') || t.includes('joke') || t.includes('floo') || t.includes('owl'))) return true;
+      return false;
+    }
+
+    // =========================================================================
+    // Product Rendering (Only Portrait Image + Name + Inspect Button)
+    // =========================================================================
+    const productGrid = document.getElementById("productGrid");
+    const catalogCount = document.getElementById("catalogCount");
+    const catalogSearch = document.getElementById("catalogSearch");
+    const filterBar = document.getElementById("filterBar");
+
+    function renderCatalog() {
+      const q = catalogSearch.value.trim().toLowerCase();
+      const filtered = allProducts.filter(p => {
+        const matchesCategory = matchFilter(p, currentFilter);
+        const matchesSearch = !q || (p.title.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q));
+        return matchesCategory && matchesSearch;
+      });
+
+      catalogCount.textContent = `Showing ${filtered.length} of ${allProducts.length} items`;
+      productGrid.innerHTML = "";
+
+      if (filtered.length === 0) {
+        productGrid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align:center; padding: 48px 16px; color: var(--tx-muted);">
+            <div style="font-size: 40px; margin-bottom: 8px;">🧙‍♂️</div>
+            <p>No magical items found matching your query. Consult Dobby in the helper desk!</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+        const icon = getCategoryIcon(p.category, p.title);
+
+        // ONLY image (in portrait), name of the item, and inspect button
+        card.innerHTML = `
+          <div class="product-img-slot">
+            <img src="/assets/products/${p.sku}.jpg" alt="${p.title}" 
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
+                 loading="lazy" />
+            <div class="img-placeholder">
+              <span class="placeholder-icon">${icon}</span>
+              <span class="placeholder-text">Image Slot</span>
+              <span class="placeholder-hint">assets/products/${p.sku}.jpg</span>
+            </div>
+          </div>
+          <div class="product-info">
+            <h4 class="product-title">${p.title}</h4>
+            <button class="btn-inspect" type="button">Inspect 🔍</button>
+          </div>
+        `;
+
+        card.onclick = () => openProductModal(p);
+        productGrid.appendChild(card);
+      });
+    }
+
+    // =========================================================================
+    // Product Quick-View Modal (Shows All Specifications & Policies)
+    // =========================================================================
+    const modalBackdrop = document.getElementById("productModalBackdrop");
+    const btnModalClose = document.getElementById("btnModalClose");
+    const modalImg = document.getElementById("modalImg");
+    const modalPlaceholder = document.getElementById("modalPlaceholder");
+    const modalPlaceholderIcon = document.getElementById("modalPlaceholderIcon");
+    const modalPlaceholderPath = document.getElementById("modalPlaceholderPath");
+    const modalSku = document.getElementById("modalSku");
+    const modalCategory = document.getElementById("modalCategory");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalPrice = document.getElementById("modalPrice");
+    const modalRating = document.getElementById("modalRating");
+    const modalDesc = document.getElementById("modalDesc");
+    const modalOptions = document.getElementById("modalOptions");
+    const modalOptionsWrapper = document.getElementById("modalOptionsWrapper");
+    const modalNote = document.getElementById("modalNote");
+    const modalNoteWrapper = document.getElementById("modalNoteWrapper");
+    const btnAskDobbyAboutItem = document.getElementById("btnAskDobbyAboutItem");
+    const btnAddCart = document.getElementById("btnAddCart");
+
+    function openProductModal(p) {
+      activeProduct = p;
+      const icon = getCategoryIcon(p.category, p.title);
+
+      modalSku.textContent = p.sku;
+      modalCategory.textContent = p.category;
+      modalTitle.textContent = p.title;
+      modalPrice.textContent = `🪙 ${p.price}`;
+      modalRating.textContent = `⭐ ${p.rating || '4.8/5 (Wizard Verified)'}`;
+      modalDesc.textContent = p.desc;
+
+      // Image handling (Portrait showcase)
+      modalPlaceholderIcon.textContent = icon;
+      modalPlaceholderPath.textContent = `assets/products/${p.sku}.jpg`;
+      modalImg.style.display = "block";
+      modalPlaceholder.style.display = "none";
+      modalImg.src = `/assets/products/${p.sku}.jpg`;
+      modalImg.onerror = () => {
+        modalImg.style.display = "none";
+        modalPlaceholder.style.display = "flex";
+      };
+
+      // Options
+      if (p.options) {
+        modalOptionsWrapper.style.display = "block";
+        modalOptions.textContent = p.options;
+      } else {
+        modalOptionsWrapper.style.display = "none";
+      }
+
+      // Notes
+      if (p.note) {
+        modalNoteWrapper.style.display = "block";
+        modalNote.textContent = `ℹ️ ${p.note}`;
+      } else {
+        modalNoteWrapper.style.display = "none";
+      }
+
+      modalBackdrop.classList.add("open");
+      modalBackdrop.setAttribute("aria-hidden", "false");
+    }
+
+    function closeProductModal() {
+      modalBackdrop.classList.remove("open");
+      modalBackdrop.setAttribute("aria-hidden", "true");
+    }
+
+    btnModalClose.onclick = closeProductModal;
+    modalBackdrop.onclick = e => {
+      if (e.target === modalBackdrop) closeProductModal();
+    };
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && modalBackdrop.classList.contains("open")) {
+        closeProductModal();
+      }
+    });
+
+    btnAskDobbyAboutItem.onclick = () => {
+      if (!activeProduct) return;
+      const item = activeProduct;
+      closeProductModal();
+      openChatWindow();
+
+      const q = `Can Dobby tell me about the ${item.title} [${item.sku}]? What are its specifications and price?`;
+      chatInput.value = q;
+      chatForm.dispatchEvent(new Event("submit"));
+    };
+
+    btnAddCart.onclick = () => {
+      if (!activeProduct) return;
+      alert(`✨ Added ${activeProduct.title} (${activeProduct.price}) to your Gringotts Shopping Vault!`);
+    };
+
+    // Filter bar event listener
+    filterBar.addEventListener("click", e => {
+      if (e.target.classList.contains("filter-pill")) {
+        document.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
+        e.target.classList.add("active");
+        currentFilter = e.target.getAttribute("data-category");
+        renderCatalog();
+      }
+    });
+
+    catalogSearch.addEventListener("input", renderCatalog);
+
+    // Fetch initial products
+    fetch("/products.json")
+      .then(res => res.json())
+      .then(data => {
+        allProducts = data;
+        renderCatalog();
+      })
+      .catch(err => {
+        console.error("Could not load products.json:", err);
+      });
+
+    // =========================================================================
+    // Floating Dobby Helper Desk Chat Window
+    // =========================================================================
     const chatLauncher = document.getElementById("chatLauncher");
     const chatWindow = document.getElementById("chatWindow");
     const closeChatBtn = document.getElementById("closeChatBtn");
@@ -735,19 +1730,21 @@
 
     let hist = [];
 
-    // Launcher Widget Behavior
-    chatLauncher.onclick = () => {
+    function openChatWindow() {
       chatWindow.classList.add("open");
       chatWindow.setAttribute("aria-hidden", "false");
       chatLauncher.classList.add("hidden");
       setTimeout(() => chatInput.focus(), 150);
-    };
+    }
 
-    closeChatBtn.onclick = () => {
+    function closeChatWindow() {
       chatWindow.classList.remove("open");
       chatWindow.setAttribute("aria-hidden", "true");
       chatLauncher.classList.remove("hidden");
-    };
+    }
+
+    chatLauncher.onclick = openChatWindow;
+    closeChatBtn.onclick = closeChatWindow;
 
     newChatBtn.onclick = () => {
       hist = [];
@@ -798,7 +1795,7 @@
       // Galleon amounts highlighter (e.g. 7.00 G, 250.00 G)
       s = s.replace(/\b(\d+(?:\.\d{1,2})?\s*G)\b/g, '<span class="galleon-price">🪙 $1</span>');
 
-      s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:var(--ac);text-decoration:underline;">$1</a>');
+      s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:underline;">$1</a>');
       return s.replace(/\u0000(\d+)\u0000/g, (_, i) => '<code>' + codes[i] + '</code>');
     }
 
@@ -811,26 +1808,22 @@
         const l = lines[i];
         if (!l.trim()) { i++; continue; }
 
-        // Code block
         if (/^```/.test(l)) {
           const buf = []; i++;
           while (i < lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]);
           i++;
           out.push('<pre><code>' + esc(buf.join('\n')) + '</code></pre>');
         }
-        // Headings
         else if (/^#{1,4}\s/.test(l)) {
           const n = l.match(/^#+/)[0].length;
           out.push('<h' + n + '>' + inlineMd(l.replace(/^#+\s+/, '')) + '</h' + n + '>');
           i++;
         }
-        // Blockquote
         else if (/^>\s?/.test(l)) {
           const buf = [];
           while (i < lines.length && /^>\s?/.test(lines[i])) buf.push(lines[i++].replace(/^>\s?/, ''));
           out.push('<blockquote>' + inlineMd(buf.join(' ')) + '</blockquote>');
         }
-        // Tables
         else if (/^\|.+\|\s*$/.test(l) && /^\|[\s:|-]+\|\s*$/.test(lines[i + 1] || '')) {
           const row = r => r.trim().replace(/^\||\|$/g, '').split('|').map(c => inlineMd(c.trim()));
           const head = row(l); i += 2;
@@ -839,7 +1832,6 @@
           out.push('<table><thead><tr>' + head.map(c => '<th>' + c + '</th>').join('') + '</tr></thead><tbody>' +
                    body.map(r => '<tr>' + r.map(c => '<td>' + c + '</td>').join('') + '</tr>').join('') + '</tbody></table>');
         }
-        // Lists
         else if (/^\s*(\d+\.|[-*])\s+/.test(l)) {
           const mList = l.match(/^(\s*)(\d+\.|[-*])\s+(.*)/);
           const baseIndent = mList[1].length;
@@ -888,7 +1880,6 @@
           }
           out.push('<' + tag + '>' + items.map(it => '<li>' + it + '</li>').join('') + '</' + tag + '>');
         }
-        // Paragraph
         else {
           const buf = [];
           while (i < lines.length && lines[i].trim() && !/^(```|#{1,4}\s|>|\s*(\d+\.|[-*])\s+)/.test(lines[i])) {
@@ -943,7 +1934,7 @@
       }
     }
 
-    // Form Submission
+    // Chat Form Submission
     chatForm.onsubmit = async e => {
       e.preventDefault();
       const q = chatInput.value.trim();
@@ -965,7 +1956,7 @@
         });
         hist.push({ role: "assistant", content: streamedText });
       } catch (err) {
-        assistantDiv.innerHTML = "<span style='color:var(--wa)'>⚠️ Dobby cannot reach the model server! Please ensure SGLang is running.</span>";
+        assistantDiv.innerHTML = "<span style='color:var(--red)'>⚠️ Dobby cannot reach the model server! Please ensure SGLang is running.</span>";
       }
     };
 

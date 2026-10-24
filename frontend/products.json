@@ -1,0 +1,282 @@
+[
+  {
+    "title": "Ollivanders Wand",
+    "sku": "MAG-WAND-001",
+    "category": "Wands & Magical Equipment",
+    "price": "7.00 G",
+    "rating": "4.9/5 (286 reviews)",
+    "desc": "A wand-selection product inspired by Ollivanders. Each wand is listed with a wood type, core, length, and finish chosen from the store's fictional inventory.",
+    "options": "Hazel, ash, willow, or cherry wood; phoenix-feather, dragon-heartstring, or unicorn-hair core; 9--14 inches.",
+    "note": "A customer's wand suitability cannot be guaranteed from a web quiz. The listing describes the selected item rather than promising that every wand will suit every witch or wizard."
+  },
+  {
+    "title": "Gryffindor House Robes",
+    "sku": "MAG-ROB-GRY-001",
+    "category": "House Apparel",
+    "price": "18.00 G",
+    "rating": "4.7/5 (142 reviews)",
+    "desc": "Black school robes with scarlet and gold lining and a Gryffindor lion crest.",
+    "options": "Sizes XS--XXL; standard or name-personalized embroidery.",
+    "note": ""
+  },
+  {
+    "title": "Slytherin House Robes",
+    "sku": "MAG-ROB-SLY-001",
+    "category": "House Apparel",
+    "price": "18.00 G",
+    "rating": "4.6/5 (128 reviews)",
+    "desc": "Black school robes with emerald-green and silver trim and a Slytherin serpent crest.",
+    "options": "Sizes XS--XXL; standard or name-personalized embroidery.",
+    "note": ""
+  },
+  {
+    "title": "Ravenclaw House Robes",
+    "sku": "MAG-ROB-RAV-001",
+    "category": "House Apparel",
+    "price": "18.00 G",
+    "rating": "4.6/5 (119 reviews)",
+    "desc": "Black school robes with blue and bronze trim and a Ravenclaw eagle crest.",
+    "options": "Sizes XS--XXL; standard or name-personalized embroidery.",
+    "note": ""
+  },
+  {
+    "title": "Hufflepuff House Robes",
+    "sku": "MAG-ROB-HUF-001",
+    "category": "House Apparel",
+    "price": "18.00 G",
+    "rating": "4.8/5 (136 reviews)",
+    "desc": "Black school robes with yellow and black trim and a Hufflepuff badger crest.",
+    "options": "Sizes XS--XXL; standard or name-personalized embroidery.",
+    "note": ""
+  },
+  {
+    "title": "Standard Pewter Cauldron",
+    "sku": "MAG-CAUL-001",
+    "category": "Potion-Making Equipment",
+    "price": "12.50 G",
+    "rating": "4.5/5 (204 reviews)",
+    "desc": "A standard pewter cauldron for classroom-style potion practice and display.",
+    "options": "Small, standard, and large.",
+    "note": ""
+  },
+  {
+    "title": "Beginner's Potion Kit",
+    "sku": "MAG-POTKIT-001",
+    "category": "Educational Kits",
+    "price": "16.00 G",
+    "rating": "4.4/5 (178 reviews)",
+    "desc": "A fictional beginner kit containing empty labelled bottles, a measuring spoon, a mixing tool, and an illustrated practice guide. No active potion ingredients are included.",
+    "options": "",
+    "note": ""
+  },
+  {
+    "title": "Beginner's Spellbook Collection",
+    "sku": "MAG-SPELL-001",
+    "category": "Books & Education",
+    "price": "22.00 G",
+    "rating": "4.7/5 (231 reviews)",
+    "desc": "A three-volume introductory collection covering spell vocabulary, safe classroom practice, and study exercises.",
+    "options": "New set or gift-wrapped set.",
+    "note": ""
+  },
+  {
+    "title": "Self-Writing Quill",
+    "sku": "MAG-QUILL-001",
+    "category": "Stationery",
+    "price": "9.50 G",
+    "rating": "4.3/5 (167 reviews)",
+    "desc": "A fictional enchanted quill with selectable neat, cursive, and block-letter writing modes.",
+    "options": "",
+    "note": ""
+  },
+  {
+    "title": "Enchanted Parchment Set",
+    "sku": "MAG-PARCH-001",
+    "category": "Stationery & Gifts",
+    "price": "6.00 G",
+    "rating": "4.5/5 (192 reviews)",
+    "desc": "A set of 20 parchment sheets with optional gift message and wax-seal-style decoration.",
+    "options": "Plain set or personalized set.",
+    "note": "Personalization is printed decoration; it does not create a magical message-delivery service."
+  },
+  {
+    "title": "House Scarf Collection",
+    "sku": "MAG-SCARF-001",
+    "category": "Apparel & Accessories",
+    "price": "8.00 G",
+    "rating": "4.7/5 (316 reviews)",
+    "desc": "House-themed scarves available in Gryffindor scarlet/gold, Slytherin green/silver, Ravenclaw blue/bronze, and Hufflepuff yellow/black.",
+    "options": "Standard length or long length.",
+    "note": ""
+  },
+  {
+    "title": "Nimbus 2000 Broomstick",
+    "sku": "MAG-BROOM-001",
+    "category": "Magical Sports & Transportation",
+    "price": "95.00 G",
+    "rating": "4.8/5 (164 reviews)",
+    "desc": "A premium broomstick listing inspired by the Nimbus 2000.",
+    "options": "",
+    "note": ""
+  },
+  {
+    "title": "Golden Snitch Collectible",
+    "sku": "MAG-SNITCH-001",
+    "category": "Collectibles",
+    "price": "14.00 G",
+    "rating": "4.8/5 (402 reviews)",
+    "desc": "A display collectible with gold-tone finish and decorative wings.",
+    "options": "",
+    "note": "This catalog version is a collectible, not a regulation Quidditch match ball."
+  },
+  {
+    "title": "Omnioculars",
+    "sku": "MAG-OMNI-001",
+    "category": "Magical Optics",
+    "price": "32.00 G",
+    "rating": "4.6/5 (103 reviews)",
+    "desc": "A fictional viewing device with zoom, replay, and slow-view settings for spectator use.",
+    "options": "",
+    "note": ""
+  },
+  {
+    "title": "Monster Book of Monsters",
+    "sku": "MAG-MONSTERBOOK-001",
+    "category": "Magical Books",
+    "price": "28.00 G",
+    "rating": "4.5/5 (96 reviews)",
+    "desc": "A fictional collector's edition inspired by the famously unruly textbook. This retail edition has a secured display clasp and a handling guide.",
+    "options": "",
+    "note": ""
+  },
+  {
+    "title": "Marauder's Map",
+    "sku": "MAG-MAP-001",
+    "category": "Magical Maps & Collectibles",
+    "price": "19.00 G",
+    "rating": "4.8/5 (354 reviews)",
+    "desc": "A parchment-style collectible inspired by the Marauder's Map, with a fictional reveal-style display effect.",
+    "options": "",
+    "note": ""
+  },
+  {
+    "title": "Remembrall",
+    "sku": "MAG-REM-001",
+    "category": "Magical Accessories",
+    "price": "11.00 G",
+    "rating": "4.4/5 (221 reviews)",
+    "desc": "A glass-style display orb with a red visual effect in the fictional product design.",
+    "options": "",
+    "note": ""
+  },
+  {
+    "title": "Pocket Sneakoscope",
+    "sku": "MAG-SNEAK-001",
+    "category": "Magical Detection Novelties",
+    "price": "13.50 G",
+    "rating": "4.3/5 (118 reviews)",
+    "desc": "A fictional novelty device that lights up and spins during its demonstration mode.",
+    "options": "",
+    "note": ""
+  },
+  {
+    "title": "Divination Crystal Ball",
+    "sku": "MAG-CRYSTAL-001",
+    "category": "Divination Supplies",
+    "price": "15.00 G",
+    "rating": "4.5/5 (142 reviews)",
+    "desc": "A decorative crystal-style ball for display and role-play.",
+    "options": "",
+    "note": ""
+  },
+  {
+    "title": "Wizarding Telescope",
+    "sku": "MAG-TELESCOPE-001",
+    "category": "Astronomy Equipment",
+    "price": "26.00 G",
+    "rating": "4.6/5 (87 reviews)",
+    "desc": "A fictional brass-finish telescope for classroom-style astronomy and display.",
+    "options": "",
+    "note": ""
+  },
+  {
+    "title": "Undetectable Extension Trunk",
+    "sku": "MAG-TRUNK-001",
+    "category": "Magical Luggage",
+    "price": "120.00 G",
+    "rating": "4.7/5 (73 reviews)",
+    "desc": "A fictional trunk inspired by extension charms, designed with an ordinary exterior and an advertised expanded interior in the store's fantasy setting.",
+    "options": "",
+    "note": "Expanded capacity is a fictional product feature and does not change real-world airline or transport restrictions."
+  },
+  {
+    "title": "Invisibility Cloak",
+    "sku": "MAG-CLOAK-001",
+    "category": "Premium Collectibles",
+    "price": "180.00 G",
+    "rating": "4.9/5 (61 reviews)",
+    "desc": "A premium fictional collectible inspired by the Invisibility Cloak. This store edition is a display garment and does not render the wearer invisible.",
+    "options": "",
+    "note": ""
+  },
+  {
+    "title": "Enchanted Camping Tent",
+    "sku": "MAG-TENT-001",
+    "category": "Outdoor Magical Equipment",
+    "price": "75.00 G",
+    "rating": "4.6/5 (82 reviews)",
+    "desc": "A fictional tent inspired by magically expanded interiors. The catalog's advertised interior expansion is part of the fantasy product concept.",
+    "options": "",
+    "note": "Customers must follow real-world campsite rules and must not rely on fictional expanded-space claims for physical safety."
+  },
+  {
+    "title": "Extendable Ears",
+    "sku": "MAG-EARS-001",
+    "category": "Magical Gadgets & Novelty",
+    "price": "10.00 G",
+    "rating": "4.4/5 (155 reviews)",
+    "desc": "A fictional novelty prop inspired by Weasley Wizard Wheezes, supplied as a display/play accessory.",
+    "options": "",
+    "note": ""
+  },
+  {
+    "title": "Wizarding Joke Kit",
+    "sku": "MAG-JOKE-001",
+    "category": "Novelty Products",
+    "price": "12.00 G",
+    "rating": "4.3/5 (243 reviews)",
+    "desc": "A fictional kit of harmless party props, gag labels, and joke cards.",
+    "options": "",
+    "note": ""
+  },
+  {
+    "title": "Floo Powder Travel Pack",
+    "sku": "MAG-FLOO-001",
+    "category": "Fictional Travel Supplies",
+    "price": "5.00 G",
+    "rating": "4.5/5 (197 reviews)",
+    "desc": "A sealed, prop-style packet for costumes, display, and role-play, inspired by Floo Powder.",
+    "options": "",
+    "note": "This is a fictional prop and does not enable transportation or fireplace travel."
+  },
+  {
+    "title": "Owl Post Correspondence Kit",
+    "sku": "MAG-OWLPOST-001",
+    "category": "Correspondence & Gifts",
+    "price": "9.00 G",
+    "rating": "4.6/5 (211 reviews)",
+    "desc": "A stationery kit containing 10 parchment-style sheets, 10 envelopes, 2 decorative seals, and an owl-themed address card.",
+    "options": "",
+    "note": "Delivery is handled through the store's ordinary fictional parcel service; no live owl delivery is included."
+  },
+  {
+    "title": "Self-Stirring Cauldron",
+    "sku": "MAG-CAUL-AUTO-001",
+    "category": "Enchanted Appliances",
+    "price": "38.00 G",
+    "rating": "4.5/5 (94 reviews)",
+    "desc": "A fictional countertop demonstration cauldron with a self-stirring feature in the fantasy setting.",
+    "options": "",
+    "note": ""
+  }
+]
