@@ -4,25 +4,30 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>malAI | AI Shopping Assistant</title>
+  <title>Enchanted Emporium | Dobby's Helper Desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg: #0b0f15;
-      --pn: rgba(18, 24, 34, 0.92);
-      --pn-solid: #131923;
-      --ln: rgba(255, 255, 255, 0.08);
-      --ln-hover: rgba(255, 255, 255, 0.16);
-      --tx: #f0f4f8;
+      --bg: #080a10;
+      --pn: rgba(15, 18, 28, 0.94);
+      --pn-solid: #111420;
+      --ln: rgba(245, 158, 11, 0.15);
+      --ln-hover: rgba(245, 158, 11, 0.35);
+      --tx: #f8fafc;
       --mu: #94a3b8;
-      --ac: #00e5ff;
-      --ac-glow: rgba(0, 229, 255, 0.35);
-      --brand: #3b82f6;
-      --brand-glow: rgba(59, 130, 246, 0.4);
+      --ac: #f59e0b;
+      --ac-light: #fbbf24;
+      --ac-glow: rgba(245, 158, 11, 0.35);
+      --purple: #a855f7;
+      --purple-glow: rgba(168, 85, 247, 0.3);
       --pol-badge: #10b981;
-      --sku-badge: #38bdf8;
-      --wa: #f59e0b;
-      --radius-lg: 16px;
-      --radius-md: 10px;
+      --mag-badge: #f59e0b;
+      --wa: #ef4444;
+      --radius-lg: 18px;
+      --radius-md: 12px;
     }
 
     * {
@@ -35,14 +40,13 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: var(--tx);
       background-color: var(--bg);
     }
 
     /* ==========================================================================
-       Storefront Presentation Layer
-       The user can simply replace 'frontend/assets/store_bg.jpg' with any image
+       Enchanted Diagon Alley Storefront Backdrop
        ========================================================================== */
     .storefront-backdrop {
       position: fixed;
@@ -50,52 +54,28 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: #090d14 url('/assets/store_bg.png') no-repeat center center;
+      background: 
+        radial-gradient(ellipse at 80% 15%, rgba(245, 158, 11, 0.14) 0%, transparent 60%),
+        radial-gradient(ellipse at 20% 85%, rgba(168, 85, 247, 0.12) 0%, transparent 60%),
+        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, #06070c 100%),
+        url('/assets/store_bg.png') no-repeat center center;
       background-size: cover;
       background-attachment: fixed;
       z-index: 1;
       transition: filter 0.3s ease;
     }
 
-    /* Subtle top banner & info tooltip for the user */
-    .top-store-bar { display: none !important;
+    /* Ambient mystical particles animation */
+    .magical-glow {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 48px;
-      background: linear-gradient(180deg, rgba(10, 14, 22, 0.85) 0%, rgba(10, 14, 22, 0) 100%);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-      z-index: 10;
+      inset: 0;
       pointer-events: none;
-    }
-
-    .bg-hint {
-      pointer-events: auto;
-      font-size: 11px;
-      color: rgba(255, 255, 255, 0.7);
-      background: rgba(0, 0, 0, 0.55);
-      backdrop-filter: blur(8px);
-      padding: 5px 12px;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      user-select: none;
-    }
-
-    .bg-hint code {
-      color: var(--ac);
-      font-family: monospace;
-      font-size: 11px;
+      z-index: 2;
+      background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.08), transparent 70%);
     }
 
     /* ==========================================================================
-       Floating Launcher Widget
+       Floating AI Assistant Launcher Bubble (Bottom Right)
        ========================================================================== */
     .chat-launcher {
       position: fixed;
@@ -104,21 +84,22 @@
       z-index: 999;
       display: flex;
       align-items: center;
-      gap: 12px;
-      background: linear-gradient(135deg, #2563eb, #00d2ff);
+      gap: 14px;
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #78350f 100%);
       color: #ffffff;
-      padding: 12px 20px 12px 14px;
+      padding: 12px 22px 12px 14px;
       border-radius: 999px;
-      box-shadow: 0 10px 30px rgba(0, 210, 255, 0.35), 0 4px 12px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 10px 35px rgba(245, 158, 11, 0.35), 0 4px 14px rgba(0, 0, 0, 0.6);
       cursor: pointer;
       user-select: none;
       transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
-      border: 1px solid rgba(255, 255, 255, 0.25);
+      border: 1px solid rgba(245, 158, 11, 0.4);
     }
 
     .chat-launcher:hover {
       transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 14px 38px rgba(0, 210, 255, 0.5), 0 6px 16px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 14px 42px rgba(245, 158, 11, 0.5), 0 6px 18px rgba(0, 0, 0, 0.5);
+      border-color: rgba(245, 158, 11, 0.8);
     }
 
     .chat-launcher:active {
@@ -131,14 +112,15 @@
 
     .launcher-avatar {
       position: relative;
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
+      background: linear-gradient(135deg, #f59e0b, #d97706);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-size: 20px;
+      box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
     }
 
     .launcher-pulse {
@@ -175,15 +157,17 @@
     }
 
     .launcher-title {
+      font-family: 'Cinzel', serif;
       font-weight: 700;
-      font-size: 14px;
-      letter-spacing: 0.01em;
+      font-size: 14.5px;
+      letter-spacing: 0.03em;
       line-height: 1.2;
+      color: #fef3c7;
     }
 
     .launcher-sub {
       font-size: 11px;
-      color: rgba(255, 255, 255, 0.85);
+      color: rgba(254, 243, 199, 0.8);
       line-height: 1.2;
     }
 
@@ -194,16 +178,16 @@
       position: fixed;
       bottom: 28px;
       right: 28px;
-      width: 440px;
-      height: 640px;
+      width: 450px;
+      height: 660px;
       max-width: calc(100vw - 36px);
       max-height: calc(100vh - 56px);
       background: var(--pn);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--ln-hover);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--ln);
       border-radius: var(--radius-lg);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), 0 0 1px 1px rgba(255, 255, 255, 0.08);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 1px 1px rgba(245, 158, 11, 0.2);
       z-index: 1000;
       display: flex;
       flex-direction: column;
@@ -224,7 +208,7 @@
     /* Header */
     .chat-header {
       padding: 14px 18px;
-      background: rgba(18, 24, 34, 0.95);
+      background: linear-gradient(180deg, rgba(26, 20, 36, 0.98) 0%, rgba(17, 20, 32, 0.95) 100%);
       border-bottom: 1px solid var(--ln);
       display: flex;
       align-items: center;
@@ -240,15 +224,16 @@
 
     .header-avatar {
       position: relative;
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       border-radius: 10px;
-      background: linear-gradient(135deg, #1d4ed8, #0284c7);
+      background: linear-gradient(135deg, #d97706, #b45309);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
-      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+      font-size: 22px;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+      border: 1px solid rgba(254, 243, 199, 0.3);
     }
 
     .status-dot {
@@ -267,10 +252,12 @@
     }
 
     .header-details h2 {
-      font-size: 14.5px;
+      font-family: 'Cinzel', serif;
+      font-size: 15px;
       font-weight: 700;
-      color: #ffffff;
+      color: #fef3c7;
       line-height: 1.2;
+      letter-spacing: 0.02em;
     }
 
     .header-status {
@@ -293,9 +280,9 @@
     }
 
     .btn-header {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(245, 158, 11, 0.08);
       border: 1px solid var(--ln);
-      color: var(--tx);
+      color: #fef3c7;
       padding: 6px 10px;
       border-radius: 8px;
       font-size: 12px;
@@ -308,8 +295,8 @@
     }
 
     .btn-header:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: var(--ln-hover);
+      background: rgba(245, 158, 11, 0.18);
+      border-color: var(--ac);
       color: #ffffff;
     }
 
@@ -323,10 +310,10 @@
 
     /* Live performance ribbon */
     .metrics-ribbon {
-      background: rgba(10, 14, 20, 0.85);
+      background: rgba(10, 12, 20, 0.95);
       border-bottom: 1px solid var(--ln);
       padding: 5px 16px;
-      font-family: Consolas, monospace;
+      font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
       display: flex;
       align-items: center;
@@ -335,7 +322,7 @@
     }
 
     .metrics-ribbon span b {
-      color: var(--ac);
+      color: var(--ac-light);
     }
 
     /* Chat log body */
@@ -354,35 +341,38 @@
     }
 
     .chat-body::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(245, 158, 11, 0.2);
       border-radius: 3px;
     }
 
     /* Welcome Card */
     .welcome-card {
-      background: rgba(255, 255, 255, 0.03);
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.05) 0%, rgba(168, 85, 247, 0.03) 100%);
       border: 1px solid var(--ln);
       border-radius: var(--radius-md);
-      padding: 16px;
+      padding: 18px 16px;
       text-align: center;
       margin-bottom: 6px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
     }
 
     .welcome-card h3 {
-      font-size: 15px;
-      color: #fff;
+      font-family: 'Cinzel', serif;
+      font-size: 15.5px;
+      color: #fef3c7;
       margin-bottom: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
+      letter-spacing: 0.02em;
     }
 
     .welcome-card p {
       font-size: 12.5px;
-      color: var(--mu);
-      line-height: 1.45;
-      margin-bottom: 12px;
+      color: #cbd5e1;
+      line-height: 1.5;
+      margin-bottom: 14px;
     }
 
     .quick-chips {
@@ -393,9 +383,9 @@
     }
 
     .chip {
-      background: rgba(59, 130, 246, 0.12);
-      border: 1px solid rgba(59, 130, 246, 0.25);
-      color: #93c5fd;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      color: #fde68a;
       padding: 5px 11px;
       border-radius: 16px;
       font-size: 11.5px;
@@ -405,10 +395,11 @@
     }
 
     .chip:hover {
-      background: rgba(59, 130, 246, 0.25);
-      border-color: rgba(59, 130, 246, 0.5);
+      background: rgba(245, 158, 11, 0.25);
+      border-color: var(--ac);
       color: #ffffff;
       transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
     }
 
     /* Message Bubbles */
@@ -427,22 +418,24 @@
 
     .msg.user {
       align-self: flex-end;
-      background: linear-gradient(135deg, #1d4ed8, #2563eb);
-      color: #ffffff;
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+      color: #f8fafc;
       padding: 10px 14px;
       border-radius: 14px 14px 2px 14px;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+      box-shadow: 0 4px 14px rgba(30, 27, 75, 0.35);
+      border: 1px solid rgba(168, 85, 247, 0.3);
       white-space: pre-wrap;
     }
 
     .msg.assistant {
       align-self: flex-start;
-      background: rgba(22, 29, 41, 0.95);
-      border: 1px solid var(--ln);
+      background: rgba(18, 22, 34, 0.95);
+      border: 1px solid rgba(245, 158, 11, 0.18);
+      border-left: 3px solid var(--ac);
       color: var(--tx);
       padding: 12px 15px;
       border-radius: 14px 14px 14px 2px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
     }
 
     .msg.assistant p {
@@ -463,18 +456,19 @@
     }
 
     .msg.assistant strong {
-      color: #ffffff;
+      color: #fef08a;
       font-weight: 600;
     }
 
     .msg.assistant em {
-      color: #cbd5e1;
+      color: #fed7aa;
     }
 
     .msg.assistant h1,
     .msg.assistant h2,
     .msg.assistant h3 {
-      color: #ffffff;
+      font-family: 'Cinzel', serif;
+      color: #fef3c7;
       margin: 10px 0 6px;
       font-weight: 600;
     }
@@ -484,22 +478,22 @@
     .msg.assistant h3 { font-size: 1.0em; }
 
     .msg.assistant pre {
-      background: #0f141d;
+      background: #090c14;
       border: 1px solid var(--ln);
       padding: 8px 10px;
       border-radius: 6px;
       overflow-x: auto;
       margin: 6px 0;
       font-size: 12px;
-      font-family: Consolas, monospace;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     .msg.assistant code {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--ac);
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--ac-light);
       padding: 1px 5px;
       border-radius: 4px;
-      font-family: Consolas, monospace;
+      font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
     }
 
@@ -524,38 +518,45 @@
     }
 
     .msg.assistant th {
-      background: rgba(255, 255, 255, 0.06);
-      color: #ffffff;
+      background: rgba(245, 158, 11, 0.08);
+      color: #fef3c7;
+      font-family: 'Cinzel', serif;
     }
 
-    /* Badges for SKU and Policies */
+    /* Badges for Magical Catalog and Store Policies */
     .cite-badge {
       display: inline-block;
-      font-family: Consolas, monospace;
+      font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
       font-weight: 600;
-      padding: 1px 6px;
+      padding: 1px 7px;
       border-radius: 6px;
       margin: 0 2px;
       vertical-align: baseline;
     }
 
-    .cite-badge.sku-badge {
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--sku-badge);
-      border: 1px solid rgba(56, 189, 248, 0.35);
+    .cite-badge.mag-badge {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
     }
 
     .cite-badge.pol-badge {
       background: rgba(16, 185, 129, 0.15);
-      color: var(--pol-badge);
-      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .galleon-price {
+      color: #fbbf24;
+      font-weight: 700;
+      text-shadow: 0 0 6px rgba(245, 158, 11, 0.4);
     }
 
     /* Input Footer */
     .chat-footer {
       padding: 12px 14px;
-      background: rgba(18, 24, 34, 0.95);
+      background: rgba(15, 18, 28, 0.98);
       border-top: 1px solid var(--ln);
     }
 
@@ -567,7 +568,7 @@
 
     .chat-input {
       flex: 1;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(245, 158, 11, 0.05);
       border: 1px solid var(--ln);
       color: #ffffff;
       padding: 10px 14px;
@@ -579,18 +580,19 @@
 
     .chat-input:focus {
       border-color: var(--ac);
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(245, 158, 11, 0.08);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
     }
 
     .chat-input::placeholder {
-      color: rgba(255, 255, 255, 0.35);
+      color: rgba(254, 243, 199, 0.35);
     }
 
     .btn-send {
-      width: 38px;
-      height: 38px;
-      background: linear-gradient(135deg, #0284c7, #00d2ff);
-      color: #0b131e;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #0b0d14;
       border: none;
       border-radius: 10px;
       display: flex;
@@ -603,7 +605,7 @@
 
     .btn-send:hover {
       transform: scale(1.04);
-      box-shadow: 0 4px 14px rgba(0, 210, 255, 0.4);
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.45);
     }
 
     .btn-send:active {
@@ -631,48 +633,35 @@
 </head>
 
 <body>
-  <!-- =========================================================================
-       Storefront Background Presentation
-       To change the image, simply replace 'frontend/assets/store_bg.jpg'
-       ========================================================================= -->
+  <!-- Enchanted Emporium Storefront Presentation -->
   <div class="storefront-backdrop" id="backdrop"></div>
+  <div class="magical-glow"></div>
 
-  <!-- Top bar with helpful indication of the swappable storefront background -->
-  <div class="top-store-bar">
-    <div class="bg-hint" title="Swap this background by replacing frontend/assets/store_bg.jpg">
-      <span>🖼️ Store Background: <code>frontend/assets/store_bg.jpg</code></span>
-    </div>
-  </div>
-
-  <!-- =========================================================================
-       Floating AI Assistant Launcher Bubble (Bottom Right)
-       ========================================================================= -->
-  <div class="chat-launcher" id="chatLauncher" role="button" aria-label="Open AI Shopping Assistant">
+  <!-- Floating AI Assistant Launcher Bubble (Bottom Right) -->
+  <div class="chat-launcher" id="chatLauncher" role="button" aria-label="Open Dobby's Helper Desk">
     <div class="launcher-avatar">
-      🛍️
+      🧦
       <div class="launcher-pulse"></div>
     </div>
     <div class="launcher-text">
-      <span class="launcher-title">Ask malAI</span>
-      <span class="launcher-sub">Shopping & Policy Assistant</span>
+      <span class="launcher-title">Ask Dobby</span>
+      <span class="launcher-sub">Enchanted Emporium Helper</span>
     </div>
   </div>
 
-  <!-- =========================================================================
-       Floating Chatbot Modal / Card Window
-       ========================================================================= -->
+  <!-- Floating Chatbot Modal / Card Window -->
   <div class="chat-window" id="chatWindow" aria-hidden="true">
     <!-- Header -->
     <div class="chat-header">
       <div class="header-info">
         <div class="header-avatar">
-          🛍️
+          🧦
           <div class="status-dot" id="statusDot"></div>
         </div>
         <div class="header-details">
-          <h2>malAI Shopping Assistant</h2>
+          <h2>Dobby the House-Elf</h2>
           <div class="header-status">
-            <span id="modelStatus">Private & Offline</span> • <b id="tpsStatus">0.0 tps</b>
+            <span id="modelStatus">Enchanted Emporium</span> • <b id="tpsStatus">0.0 tps</b>
           </div>
         </div>
       </div>
@@ -693,21 +682,23 @@
 
     <!-- Live Metrics Ribbon -->
     <div class="metrics-ribbon">
-      <span>Server: <b id="ribbonServer">Connecting...</b></span>
+      <span>Model: <b id="ribbonServer">Dobby (Local)</b></span>
       <span>Cache Hit: <b id="ribbonCache">–</b></span>
-      <span>Total Toks: <b id="ribbonToks">0</b></span>
+      <span>Toks: <b id="ribbonToks">0</b></span>
     </div>
 
     <!-- Message Stream History -->
     <div class="chat-body" id="chatBody">
       <div class="welcome-card" id="welcomeCard">
-        <h3>👋 Welcome to NovaTech Electronics!</h3>
-        <p>I'm your intelligent shopping assistant. Ask me about laptop specs, wireless earbuds, warranty coverage, returns, or price matches.</p>
+        <h3>✨ Welcome to Enchanted Emporium!</h3>
+        <p>Dobby is most delighted to serve you, kind wizard or witch! Ask Dobby about Ollivanders wands, Nimbus broomsticks, Hogwarts house robes, owl post delivery, or store returns.</p>
         <div class="quick-chips">
-          <button class="chip" data-q="What is your best lightweight laptop under $1000?">💻 Laptop under $1000?</button>
-          <button class="chip" data-q="Compare EchoPods Pro ANC and EchoBuds Sport.">🎧 Compare EchoPods vs EchoBuds</button>
-          <button class="chip" data-q="What is your 30-day return policy for opened items?">📦 Return Policy & Fees</button>
-          <button class="chip" data-q="Do you offer free shipping and price matching?">⚡ Free Shipping & Price Match</button>
+          <button class="chip" data-q="What are the available wand woods and cores for the Ollivanders Wand?">🪄 Ollivanders Wands & Cores</button>
+          <button class="chip" data-q="Tell Dobby about the Nimbus 2000 Broomstick and its handling specs.">🧹 Nimbus 2000 Broomstick</button>
+          <button class="chip" data-q="What colors and trim are featured on the Ravenclaw House Robes?">🦅 Ravenclaw House Robes</button>
+          <button class="chip" data-q="How much does owl post shipping cost and how fast is it?">🦉 Owl Post Delivery</button>
+          <button class="chip" data-q="What is the standard return policy window for unopened items?">📜 30-Day Return Policy</button>
+          <button class="chip" data-q="Can Dobby sell me cursed dark artifacts or Hand of Glory?">⚠️ Dark Arts Inquiries</button>
         </div>
       </div>
     </div>
@@ -715,7 +706,7 @@
     <!-- Message Input Bar -->
     <div class="chat-footer">
       <form class="chat-form" id="chatForm">
-        <input class="chat-input" id="chatInput" placeholder="Ask about products, specs, deals, or policies…" autocomplete="off" />
+        <input class="chat-input" id="chatInput" placeholder="Ask Dobby about wands, brooms, owl delivery, or policies…" autocomplete="off" />
         <button type="submit" class="btn-send" title="Send message" aria-label="Send">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -726,45 +717,38 @@
     </div>
   </div>
 
-  <!-- =========================================================================
-       Application Logic & Real-time Streaming Markdown Parser
-       ========================================================================= -->
   <script>
+    const chatLauncher = document.getElementById("chatLauncher");
+    const chatWindow = document.getElementById("chatWindow");
+    const closeChatBtn = document.getElementById("closeChatBtn");
+    const newChatBtn = document.getElementById("newChatBtn");
+    const chatBody = document.getElementById("chatBody");
+    const chatForm = document.getElementById("chatForm");
+    const chatInput = document.getElementById("chatInput");
+    const welcomeCard = document.getElementById("welcomeCard");
+    const statusDot = document.getElementById("statusDot");
+    const modelStatus = document.getElementById("modelStatus");
+    const tpsStatus = document.getElementById("tpsStatus");
+    const ribbonServer = document.getElementById("ribbonServer");
+    const ribbonCache = document.getElementById("ribbonCache");
+    const ribbonToks = document.getElementById("ribbonToks");
+
     let hist = [];
-    const $ = s => document.querySelector(s);
-    const chatBody = $("#chatBody");
-    const chatInput = $("#chatInput");
-    const chatForm = $("#chatForm");
-    const chatWindow = $("#chatWindow");
-    const chatLauncher = $("#chatLauncher");
-    const welcomeCard = $("#welcomeCard");
-    const newChatBtn = $("#newChatBtn");
-    const closeChatBtn = $("#closeChatBtn");
-    const statusDot = $("#statusDot");
-    const modelStatus = $("#modelStatus");
-    const tpsStatus = $("#tpsStatus");
-    const ribbonServer = $("#ribbonServer");
-    const ribbonCache = $("#ribbonCache");
-    const ribbonToks = $("#ribbonToks");
 
-    // Toggle Chat Window
-    function toggleChat(open) {
-      if (open) {
-        chatWindow.classList.add("open");
-        chatWindow.setAttribute("aria-hidden", "false");
-        chatLauncher.classList.add("hidden");
-        setTimeout(() => chatInput.focus(), 250);
-      } else {
-        chatWindow.classList.remove("open");
-        chatWindow.setAttribute("aria-hidden", "true");
-        chatLauncher.classList.remove("hidden");
-      }
-    }
+    // Launcher Widget Behavior
+    chatLauncher.onclick = () => {
+      chatWindow.classList.add("open");
+      chatWindow.setAttribute("aria-hidden", "false");
+      chatLauncher.classList.add("hidden");
+      setTimeout(() => chatInput.focus(), 150);
+    };
 
-    chatLauncher.onclick = () => toggleChat(true);
-    closeChatBtn.onclick = () => toggleChat(false);
+    closeChatBtn.onclick = () => {
+      chatWindow.classList.remove("open");
+      chatWindow.setAttribute("aria-hidden", "true");
+      chatLauncher.classList.remove("hidden");
+    };
 
-    // New Chat handler
     newChatBtn.onclick = () => {
       hist = [];
       chatBody.innerHTML = "";
@@ -772,38 +756,47 @@
         welcomeCard.style.display = "block";
         chatBody.appendChild(welcomeCard);
       }
-      chatInput.focus();
     };
 
-    // Quick prompt chips
+    // Quick chips insertion
     document.addEventListener("click", e => {
       if (e.target.classList.contains("chip")) {
-        const q = e.target.getAttribute("data-q");
-        if (q) {
-          chatInput.value = q;
+        const query = e.target.getAttribute("data-q");
+        if (query) {
+          chatInput.value = query;
           chatForm.dispatchEvent(new Event("submit"));
         }
       }
     });
 
-    // Zero-dependency rich Markdown & Shopping Clause Badge Parser
-    const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    // High-performance Inline Markdown Parser with Wizarding Badges & Galleons
+    function esc(s) {
+      return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
 
-    function inlineMd(s) {
-      s = esc(s);
+    function inlineMd(src) {
+      if (!src) return "";
       const codes = [];
-      s = s.replace(/`([^`]+)`/g, (_, c) => { codes.push(c); return '\u0000' + (codes.length - 1) + '\u0000'; });
+      let s = src.replace(/`([^`]+)`/g, (_, c) => {
+        codes.push(esc(c));
+        return '\u0000' + (codes.length - 1) + '\u0000';
+      });
+
+      s = esc(s);
       s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
       s = s.replace(/(^|[^*\w])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
 
-      // Product SKU badges (e.g. [SKU-LAP-101])
-      s = s.replace(/\[(SKU-[A-Z0-9_-]+)\]/g, '<span class="cite-badge sku-badge">$1</span>');
+      // Magical Product SKU badges (e.g. [MAG-WAND-001], [MAG-BROOM-001])
+      s = s.replace(/\[(MAG-[A-Z0-9_-]+)\]/g, '<span class="cite-badge mag-badge">🪄 $1</span>');
 
-      // Store Policy badges (e.g. [POL-RET-01])
-      s = s.replace(/\[(POL-[A-Z0-9_-]+(?:\s*\/[^\],]+)?)\]/g, '<span class="cite-badge pol-badge">$1</span>');
+      // Store Policy badges (e.g. [RET-01], [SHIP-02], [ROB-RAV-01], [WAR-01])
+      s = s.replace(/\[((?:RET|SHIP|WAR|ROB|ORD|PRICE|COUP|INV|CUST|ESC)-[A-Z0-9_-]+(?:\s*\/[^\],]+)?)\]/g, '<span class="cite-badge pol-badge">📜 $1</span>');
 
       // Numeric reference badges (e.g. [1])
       s = s.replace(/\[(\d{1,2})\](?![\(\w])/g, '<span class="cite-badge pol-badge">[$1]</span>');
+
+      // Galleon amounts highlighter (e.g. 7.00 G, 250.00 G)
+      s = s.replace(/\b(\d+(?:\.\d{1,2})?\s*G)\b/g, '<span class="galleon-price">🪙 $1</span>');
 
       s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:var(--ac);text-decoration:underline;">$1</a>');
       return s.replace(/\u0000(\d+)\u0000/g, (_, i) => '<code>' + codes[i] + '</code>');
@@ -958,7 +951,7 @@
       chatInput.value = "";
 
       appendMessage("user", q);
-      const assistantDiv = appendMessage("assistant", "Thinking...");
+      const assistantDiv = appendMessage("assistant", "Dobby is thinking...");
       let streamedText = "";
 
       try {
@@ -972,7 +965,7 @@
         });
         hist.push({ role: "assistant", content: streamedText });
       } catch (err) {
-        assistantDiv.innerHTML = "<span style='color:var(--wa)'>⚠️ Could not reach local model. Please verify SGLang is running.</span>";
+        assistantDiv.innerHTML = "<span style='color:var(--wa)'>⚠️ Dobby cannot reach the model server! Please ensure SGLang is running.</span>";
       }
     };
 
@@ -987,7 +980,7 @@
         } else {
           statusDot.classList.add("offline");
           ribbonServer.textContent = "Offline";
-          modelStatus.textContent = "Model Offline";
+          modelStatus.textContent = "Dobby Offline";
         }
         tpsStatus.textContent = (res.tps || 0.0).toFixed(1) + " tps";
         ribbonCache.textContent = res.cache != null ? (res.cache * 100).toFixed(0) + "%" : "0%";
