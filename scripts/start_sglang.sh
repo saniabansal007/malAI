@@ -1,3 +1,5 @@
+
+
 #!/usr/bin/env bash
 # Launch SGLang tuned for a 6 GB GPU (RTX 4050 laptop). Override with env vars, e.g.
 #   MODEL=Qwen/Qwen3-1.7B CTX=4096 ./scripts/start_sglang.sh
@@ -6,13 +8,7 @@
 #   python -m sglang.launch_server --help
 set -euo pipefail
 cd "$(dirname "$0")/.."
-
-if [ -d "models/banking_model_merged" ]; then
-    DEFAULT_MODEL="models/banking_model_merged"
-else
-    DEFAULT_MODEL="Qwen/Qwen2.5-1.5B-Instruct"
-fi
-MODEL="${MODEL:-$DEFAULT_MODEL}"
+MODEL="${MODEL:-Qwen/Qwen2.5-1.5B-Instruct}"
 PORT="${PORT:-30000}"
 CTX="${CTX:-4096}"
 MEM="${MEM:-0.75}"        # fraction of VRAM for weights + KV cache.

@@ -177,4 +177,15 @@ async def benchmark():
     nocache, cached = await run(True), await run(False)
     return {"no_cache_s": nocache, "cache_s": cached, "speedup": round(nocache / max(cached, 1e-3), 2)}
 
+@app.get("/")
+async def root():
+    from fastapi.responses import HTMLResponse
+    p = Path("frontend/index.html")
+    content = p.read_text(encoding="utf-8") if p.exists() else "Not found"
+    return HTMLResponse(content, headers={
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
+    })
+
 app.mount("/", StaticFiles(directory="frontend", html=True), name="ui")
