@@ -1,0 +1,17 @@
+{
+  "total_verified_samples": 63,
+  "sft_train_count": 53,
+  "sft_val_count": 10,
+  "dpo_pairs_count": 63,
+  "category_distribution": {
+    "policy_qa": 21,
+    "adversarial_refusal": 21,
+    "case_evaluation": 21
+  },
+  "export_files": {
+    "sft_train": "data/curated/sft_train.jsonl",
+    "sft_val": "data/curated/sft_val.jsonl",
+    "sft_alpaca": "data/curated/sft_alpaca.jsonl",
+    "dpo_pairs": "data/curated/dpo_pairs.jsonl"
+  }
+}
