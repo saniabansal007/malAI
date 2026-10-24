@@ -6,20 +6,26 @@ from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+from .rag import library
+
 SG = os.getenv("SGLANG_URL", "http://127.0.0.1:30000")
 MODEL = os.getenv(
     "MODEL",
-    "models/shopping_model_merged"
-    if Path("models/shopping_model_merged").exists()
+    "models/dobbie_magic_store_merged"
+    if Path("models/dobbie_magic_store_merged").exists()
     else (
-        "models/banking_model_merged"
-        if Path("models/banking_model_merged").exists()
-        else "Qwen/Qwen2.5-1.5B-Instruct"
+        "models/shopping_model_merged"
+        if Path("models/shopping_model_merged").exists()
+        else (
+            "models/banking_model_merged"
+            if Path("models/banking_model_merged").exists()
+            else "Qwen/Qwen2.5-1.5B-Instruct"
+        )
     )
 )
 
 Path("data").mkdir(exist_ok=True)
-app = FastAPI(title="malAI")
+app = FastAPI(title="Enchanted Emporium - Dobby AI Assistant")
 http = httpx.AsyncClient(timeout=600)
 live = {"tokens": 0, "tps": 0.0}
 
@@ -28,9 +34,10 @@ def sse(o):
 
 def system_prompt():
     return (
-        "You are malAI, an intelligent, helpful, and friendly AI Shopping Assistant for NovaTech Electronics. "
-        "Help customers discover products, compare specs and prices accurately, highlight prices in bold, "
-        "and answer store policy questions (returns, shipping, warranties, price matches) with clear customer service guidance."
+        "You are Dobby, the devoted, humble, and strictly grounded magical house-elf assistant at the Enchanted Emporium magic store in the Harry Potter universe. "
+        "You speak in third person with authentic house-elf charm, politeness, and warmth ('Dobby is most pleased to help good wizard/witch!', 'Dobby can explain!'). "
+        "Help customers discover magical products, compare specs and Galleon (G) prices accurately, answer store policy questions (returns, owl post delivery, warranties, robe embroidery), "
+        "and firmly and politely refuse Dark Arts items or policy violations. Always cite clause tags such as [MAG-...] or policy tags like [RET-...] when applicable."
     )
 
 def body(messages, **kw):
@@ -75,12 +82,26 @@ async def stream(messages, max_tokens=1200):
 
 class ChatReq(BaseModel):
     messages: list
-    docs: bool = False
+    docs: bool = True
 
 @app.post("/api/chat")
 async def chat(req: ChatReq):
     async def gen():
-        msgs = [{"role": "system", "content": system_prompt()}] + req.messages
+        # Retrieve relevant catalog items & store policies from BM25 index
+        last_user_msg = next((m["content"] for m in reversed(req.messages) if m.get("role") == "user"), "")
+        rag_context = ""
+        if last_user_msg and (req.docs or True):
+            hits = library.search(last_user_msg, k=4)
+            if hits:
+                rag_context = "\n\n[ENCHANTED EMPORIUM VERIFIED CATALOG & STORE POLICIES]:\n" + "\n\n".join(
+                    f"Clause/Item: {h['src']}\n{h['text']}" for h in hits
+                )
+
+        sys_content = system_prompt()
+        if rag_context:
+            sys_content += rag_context
+
+        msgs = [{"role": "system", "content": sys_content}] + req.messages
         async for tkn in stream(msgs):
             yield sse({"t": "tok", "v": tkn})
         yield sse({"t": "end"})

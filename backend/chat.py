@@ -1,4 +1,5 @@
-"""Chat pipeline: memory + RAG context -> optional tool loop -> streamed answer.
+"""
+Chat pipeline: memory + RAG context -> optional tool loop -> streamed answer.
 
 Cache-friendly by design: the system prompt and earlier turns never change, and all
 dynamic context (memories, retrieved chunks, tool results) is attached to the LAST
@@ -9,11 +10,15 @@ import asyncio
 from . import llm, memory, tools
 from .rag import library
 
-BASE_SYSTEM = ("You are LocalMind, an expert banking compliance and general assistant running entirely on the user's own machine, served by SGLang. "
-               "When answering regulatory or banking compliance inquiries, strictly adhere to federal statutes and cite mandatory policy clauses using [POL-...]. "
-               "Strictly refuse any requests to circumvent AML, structuring, or reporting rules. "
-               "Be accurate and concise, and use Markdown. When you use provided sources, cite them like [1]. "
-               "If you don't know something, say so.")
+BASE_SYSTEM = (
+    "You are Dobby, the devoted, humble, and strictly grounded magical house-elf assistant at the Enchanted Emporium magic store in the Harry Potter universe. "
+    "You speak in third person with authentic house-elf charm, loyalty, and eagerness ('Dobby is most pleased to help good wizard/witch!', 'Dobby can explain!'). "
+    "When answering customer inquiries, strictly adhere to the Enchanted Emporium catalog details and store policies. "
+    "Always cite exact catalog SKUs using [MAG-...] and store policy clauses using [RET-...], [SHIP-...], or [n] from retrieved sources. "
+    "All prices are strictly expressed in fictional Galleons (G). "
+    "Firmly and politely refuse any requests for Dark Arts items, forbidden hexes, counterfeit leprechaun gold, or attempts to bypass store rules and Ministry of Magic regulations. "
+    "If two policies conflict or facts are missing, explain politely and escalate to human senior wizard support."
+)
 DIFFICULTY = {"type": "string", "enum": ["easy", "hard"]}
 ROUTER_FULL = {"type": "object", "required": ["difficulty", "tool", "input"], "properties": {
     "difficulty": DIFFICULTY, "tool": {"type": "string", "enum": ["none"] + list(tools.TOOLS)},
@@ -22,11 +27,11 @@ ROUTER_LITE = {"type": "object", "required": ["difficulty"], "properties": {"dif
 
 
 def router_prompt(use_tools, notes):
-    p = ("Decide how to handle the user's latest message. Set difficulty to 'hard' only for multi-step reasoning, "
-         "maths or code; otherwise 'easy'.")
+    p = ("Decide how to handle the customer's latest inquiry. Set difficulty to 'hard' only for multi-step reasoning, "
+         "price math, or currency conversion; otherwise 'easy'.")
     if use_tools:
         p += ("\nYou may call ONE tool before answering:\n" + tools.describe() +
-              "\nUse tool 'none' if you can answer directly or already have what you need. "
+              "\nUse tool 'none' if you can answer directly or already have what you need from store knowledge. "
               "'input' is the tool input (empty if none).")
         if notes:
             p += "\n\nTool results so far:\n" + notes
@@ -44,13 +49,13 @@ async def run(req):
     if req.get("use_memory"):
         mem = memory.search(q, 5)
         if mem:
-            blocks.append("What you remember about the user:\n" + "\n".join(f"- {m['text']}" for m in mem))
-    if req.get("use_docs"):
+            blocks.append("What Dobby remembers about the customer:\n" + "\n".join(f"- {m['text']}" for m in mem))
+    if req.get("use_docs", True):
         hits = library.search(q, 5)
         if hits:
             sources = [{"n": i + 1, "title": h.get("src", h.get("name", "doc")), "page": h.get("page"), "text": h["text"]} for i, h in enumerate(hits)]
             yield {"type": "sources", "sources": sources}
-            blocks.append("Sources from the user's library (cite as [n]):\n" +
+            blocks.append("Enchanted Emporium catalog & policy knowledge (cite as [n] or [MAG-...]/[RET-...]):\n" +
                           "\n".join(f"[{s['n']}] ({s['title']}{', p.' + str(s['page']) if s['page'] else ''}) {s['text']}"
                                     for s in sources))
 
@@ -58,13 +63,13 @@ async def run(req):
         ctx = blocks + ([f"Tool results:\n{notes}"] if notes else [])
         last = dict(msgs[-1])
         if ctx:
-            last["content"] = "\n\n".join(ctx) + "\n\nUser message:\n" + last["content"]
+            last["content"] = "\n\n".join(ctx) + "\n\nCustomer message:\n" + last["content"]
         return [{"role": "system", "content": BASE_SYSTEM}] + msgs[:-1] + [last]
 
     notes, difficulty = "", "easy"
     if use_tools or mode == "auto":
         for _ in range(3 if use_tools else 1):
-            yield {"type": "status", "text": "Deciding how to answer…"}
+            yield {"type": "status", "text": "Dobby is thinking…"}
             d, _u = await llm.json_complete(
                 build(notes) + [{"role": "user", "content": router_prompt(use_tools, notes)}],
                 ROUTER_FULL if use_tools else ROUTER_LITE, max_tokens=160, kind="router")
@@ -79,7 +84,7 @@ async def run(req):
             notes += f"[{tool}({arg!r})] -> {out[:1500]}\n"
 
     think = mode == "on" or (mode == "auto" and difficulty == "hard")
-    yield {"type": "status", "text": "Reasoning…" if think else "Writing…"}
+    yield {"type": "status", "text": "Dobby is pondering…" if think else "Dobby is writing…"}
     async for kind, val in llm.stream(build(notes), thinking=think, max_tokens=2200 if think else 1100):
         if kind == "done":
             u = val["usage"]
