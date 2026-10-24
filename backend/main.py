@@ -19,7 +19,7 @@ MODEL = os.getenv(
 )
 
 Path("data").mkdir(exist_ok=True)
-app = FastAPI(title="LocalMind")
+app = FastAPI(title="malAI")
 http = httpx.AsyncClient(timeout=600)
 live = {"tokens": 0, "tps": 0.0}
 
@@ -28,9 +28,9 @@ def sse(o):
 
 def system_prompt():
     return (
-        "You are LocalMind, an intelligent, helpful, and strictly grounded AI Shopping Assistant for NovaTech Electronics. "
-        "Help customers discover products, compare specs and prices accurately, answer store policy questions (returns, shipping, warranties, price matches), "
-        "and enforce store policies politely and accurately. Always cite clause tags such as [SKU-...] or [POL-...] when applicable."
+        "You are malAI, an intelligent, helpful, and friendly AI Shopping Assistant for NovaTech Electronics. "
+        "Help customers discover products, compare specs and prices accurately, highlight prices in bold, "
+        "and answer store policy questions (returns, shipping, warranties, price matches) with clear customer service guidance."
     )
 
 def body(messages, **kw):
