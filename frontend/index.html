@@ -176,7 +176,7 @@
       pointer-events: none;
     }
 
-    /* Vault & Cart Status */
+    /* Vault Indicator (Interactive Deposit) */
     .nav-actions {
       display: flex;
       align-items: center;
@@ -189,15 +189,25 @@
       gap: 8px;
       background: rgba(245, 158, 11, 0.08);
       border: 1px solid var(--ln);
-      padding: 7px 14px;
+      padding: 7px 15px;
       border-radius: 999px;
       font-size: 12.5px;
       color: #fde68a;
       font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+
+    .vault-badge:hover {
+      background: rgba(245, 158, 11, 0.16);
+      border-color: var(--gold);
+      transform: translateY(-1px);
     }
 
     .vault-badge b {
       color: var(--gold-light);
+      font-size: 13px;
     }
 
     /* ==========================================================================
@@ -492,7 +502,7 @@
     }
 
     /* ==========================================================================
-       Product Quick-View Modal Popup (Shows All Details)
+       Product Quick-View Modal Popup (Shows All Specifications & Policies)
        ========================================================================== */
     .modal-backdrop {
       position: fixed;
@@ -666,7 +676,7 @@
 
     .modal-actions {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       margin-top: auto;
       padding-top: 14px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -695,30 +705,203 @@
       transform: translateY(-1px);
     }
 
-    .btn-add-cart {
-      background: linear-gradient(135deg, #d97706, #b45309);
-      border: 1px solid rgba(245, 158, 11, 0.5);
+    /* Buy Now Button */
+    .btn-buy-now {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      border: 1px solid #fbbf24;
       color: #0b0d14;
-      padding: 11px 18px;
+      padding: 11px 22px;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      gap: 7px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+    }
+
+    .btn-buy-now:hover {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-buy-now:active {
+      transform: translateY(1px);
+    }
+
+    /* ==========================================================================
+       Gringotts Payment Receipt Modal Popup
+       ========================================================================== */
+    .receipt-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 2500;
+      background: rgba(6, 8, 14, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .receipt-modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .purchase-receipt-modal {
+      background: linear-gradient(180deg, #161b2a 0%, #0d101a 100%);
+      border: 1px solid var(--gold);
+      border-radius: var(--radius-lg);
+      max-width: 480px;
+      width: 100%;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 1px 1px rgba(245, 158, 11, 0.35);
+      position: relative;
+      transform: translateY(20px) scale(0.97);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .receipt-modal-backdrop.open .purchase-receipt-modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .receipt-icon {
+      font-size: 46px;
+      margin-bottom: 6px;
+      filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.45));
+    }
+
+    .receipt-title {
+      font-family: 'Cinzel', serif;
+      font-size: 21px;
+      font-weight: 800;
+      color: #fef3c7;
+      margin-bottom: 6px;
+    }
+
+    .receipt-status-badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 3px 12px;
+      border-radius: 999px;
+      margin-bottom: 20px;
+    }
+
+    .receipt-details {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--ln);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 18px;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    .receipt-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #cbd5e1;
+    }
+
+    .receipt-row strong {
+      color: #f8fafc;
+    }
+
+    .receipt-row code {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--gold-light);
+    }
+
+    .receipt-row.highlight {
+      padding: 8px 10px;
+      background: rgba(245, 158, 11, 0.1);
+      border-radius: 6px;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+
+    .receipt-deducted {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--gold-light);
+      text-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+    }
+
+    .receipt-owl-notice {
+      font-size: 12.5px;
+      color: #94a3b8;
+      line-height: 1.5;
+      margin-bottom: 22px;
+      background: rgba(168, 85, 247, 0.05);
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(168, 85, 247, 0.15);
+    }
+
+    .receipt-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-receipt-close {
+      flex: 1;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border: 1px solid var(--gold-light);
+      color: #0b0d14;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
       transition: all 0.2s ease;
     }
 
-    .btn-add-cart:hover {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
-      transform: translateY(-1px);
+    .btn-receipt-close:hover {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+    }
+
+    .btn-ask-dobby-order {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #f8fafc;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-ask-dobby-order:hover {
+      background: rgba(168, 85, 247, 0.2);
+      border-color: var(--purple);
+      color: #ffffff;
     }
 
     /* ==========================================================================
        Floating AI Assistant Launcher Bubble (Bottom Right)
-       ========================================================================= */
+       ========================================================================== */
     .chat-launcher {
       position: fixed;
       bottom: 28px;
@@ -1254,6 +1437,483 @@
       transform: scale(0.96);
     }
 
+
+    /* ==========================================================================
+       Golden Snitch Reflex Catch Mini-Game & Nav Button
+       ========================================================================== */
+    .btn-snitch-nav {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(180, 83, 9, 0.35));
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      padding: 7px 15px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #fef08a;
+      cursor: pointer;
+      box-shadow: 0 2px 12px rgba(245, 158, 11, 0.25);
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      user-select: none;
+    }
+
+    .btn-snitch-nav:hover {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.38), rgba(217, 119, 6, 0.55));
+      border-color: var(--gold-light);
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.55);
+      transform: translateY(-1px) scale(1.02);
+    }
+
+    .snitch-mini-icon {
+      font-size: 14px;
+      animation: pulseGlow 1.4s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% { transform: scale(1); filter: drop-shadow(0 0 2px #f59e0b); }
+      100% { transform: scale(1.22); filter: drop-shadow(0 0 8px #fbbf24); }
+    }
+
+    .snitch-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 5, 10, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 1200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .snitch-modal-backdrop.open {
+      display: flex;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .snitch-modal-dialog {
+      background: #0b0f19;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 680px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 30px rgba(245, 158, 11, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .snitch-modal-header {
+      padding: 18px 24px 14px;
+      border-bottom: 1px solid var(--ln);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      background: rgba(18, 24, 38, 0.7);
+    }
+
+    .snitch-badge-tag {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gold-light);
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 3px 8px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+
+    .snitch-modal-title {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: #fef3c7;
+      margin-bottom: 2px;
+      letter-spacing: 0.02em;
+    }
+
+    .snitch-modal-sub {
+      font-size: 12.5px;
+      color: var(--tx-muted);
+    }
+
+    .btn-snitch-close {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid var(--ln);
+      color: var(--tx-muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.15s ease;
+    }
+
+    .btn-snitch-close:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    /* Snitch HUD */
+    .snitch-hud {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding: 12px 20px;
+      background: rgba(10, 14, 23, 0.9);
+      border-bottom: 1px solid var(--ln);
+    }
+
+    .hud-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 6px 8px;
+      border-radius: 8px;
+    }
+
+    .hud-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--tx-muted);
+      margin-bottom: 2px;
+    }
+
+    .hud-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .hud-val.gold {
+      color: var(--gold-light);
+      text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+    }
+
+    .hud-val.purple {
+      color: #c084fc;
+    }
+
+    /* Quidditch Pitch Field */
+    .snitch-pitch {
+      position: relative;
+      height: 380px;
+      background: radial-gradient(ellipse at 50% 20%, #172554 0%, #090d16 80%);
+      overflow: hidden;
+      cursor: crosshair;
+    }
+
+    .pitch-stars {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        radial-gradient(1px 1px at 45px 30px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 180px 120px, #f59e0b, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 320px 60px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 480px 190px, #fbbf24, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 600px 90px, #ffffff, rgba(0,0,0,0));
+      opacity: 0.6;
+    }
+
+    .pitch-moon {
+      position: absolute;
+      top: 24px;
+      right: 36px;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fffef0 0%, #fef08a 60%, rgba(245, 158, 11, 0.4) 100%);
+      box-shadow: 0 0 35px rgba(254, 240, 138, 0.35);
+      pointer-events: none;
+    }
+
+    .pitch-hoops {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      opacity: 0.22;
+      pointer-events: none;
+    }
+
+    .hoop {
+      width: 28px;
+      height: 55px;
+      border: 2px solid var(--gold-light);
+      border-bottom: none;
+      border-radius: 14px 14px 0 0;
+      position: relative;
+    }
+
+    .hoop::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 3px;
+      height: 20px;
+      background: var(--gold-light);
+    }
+
+    .hoop-mid {
+      height: 72px;
+      width: 32px;
+      border-radius: 16px 16px 0 0;
+    }
+
+    /* The Golden Snitch */
+    .golden-snitch {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      z-index: 10;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      will-change: left, top, transform;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    .snitch-body {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ffffff 0%, #fef08a 25%, #f59e0b 60%, #b45309 90%, #78350f 100%);
+      box-shadow: 0 0 16px #fbbf24, 0 0 32px rgba(245, 158, 11, 0.6);
+      position: relative;
+      z-index: 2;
+      animation: snitchPulse 0.4s infinite alternate;
+    }
+
+    @keyframes snitchPulse {
+      0% { transform: scale(0.95); }
+      100% { transform: scale(1.05); }
+    }
+
+    .snitch-wing {
+      position: absolute;
+      width: 22px;
+      height: 7px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(254, 240, 138, 0.4), transparent);
+      border-radius: 50% 50% 10% 10%;
+      top: 14px;
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+    }
+
+    .snitch-wing-left {
+      left: -12px;
+      transform-origin: right center;
+      animation: flutterLeft 0.07s infinite alternate ease-in-out;
+    }
+
+    .snitch-wing-right {
+      right: -12px;
+      transform-origin: left center;
+      transform: scaleX(-1);
+      animation: flutterRight 0.07s infinite alternate ease-in-out;
+    }
+
+    @keyframes flutterLeft {
+      0% { transform: rotate(-30deg) skewY(15deg); }
+      100% { transform: rotate(35deg) skewY(-20deg); }
+    }
+
+    @keyframes flutterRight {
+      0% { transform: scaleX(-1) rotate(-30deg) skewY(15deg); }
+      100% { transform: scaleX(-1) rotate(35deg) skewY(-20deg); }
+    }
+
+    .snitch-glow {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(251, 191, 36, 0.35) 0%, transparent 70%);
+      animation: snitchHalo 1s infinite alternate;
+    }
+
+    @keyframes snitchHalo {
+      0% { transform: scale(0.8); opacity: 0.5; }
+      100% { transform: scale(1.3); opacity: 0.9; }
+    }
+
+    /* Floating points animation */
+    .snitch-float-points {
+      position: absolute;
+      font-family: 'Cinzel', serif;
+      font-weight: 800;
+      color: #fbbf24;
+      font-size: 16px;
+      pointer-events: none;
+      z-index: 20;
+      text-shadow: 0 0 10px rgba(245, 158, 11, 0.8), 0 2px 4px #000;
+      animation: floatUpFade 0.65s forwards ease-out;
+    }
+
+    @keyframes floatUpFade {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      50% { transform: translateY(-24px) scale(1.2); }
+      100% { opacity: 0; transform: translateY(-44px) scale(0.9); }
+    }
+
+    /* Golden catch ripple */
+    .snitch-burst-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid #fbbf24;
+      pointer-events: none;
+      z-index: 15;
+      animation: burstExpand 0.45s forwards ease-out;
+    }
+
+    @keyframes burstExpand {
+      0% { width: 10px; height: 10px; transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      100% { width: 70px; height: 70px; transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+    }
+
+    /* Pitch Overlays (Intro & Results) */
+    .pitch-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(8, 11, 19, 0.9);
+      backdrop-filter: blur(4px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      z-index: 25;
+    }
+
+    .overlay-icon {
+      font-size: 44px;
+      margin-bottom: 12px;
+      animation: bounceFloat 2s infinite ease-in-out;
+    }
+
+    @keyframes bounceFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .pitch-overlay h4 {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #fef3c7;
+      margin-bottom: 8px;
+    }
+
+    .pitch-overlay p {
+      font-size: 13.5px;
+      color: var(--tx-muted);
+      max-width: 440px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .btn-snitch-start, .btn-snitch-restart {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #080b12;
+      border: 1px solid rgba(254, 240, 138, 0.4);
+      padding: 12px 28px;
+      border-radius: 999px;
+      font-family: 'Cinzel', serif;
+      font-size: 14.5px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-snitch-start:hover, .btn-snitch-restart:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 25px rgba(245, 158, 11, 0.6);
+      color: #000;
+    }
+
+    .snitch-payout-box {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 12px;
+      padding: 12px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .snitch-payout-box span {
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--tx-muted);
+    }
+
+    .snitch-payout-box strong {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--gold-light);
+      text-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+    }
+
+    .snitch-deposit-hint {
+      font-size: 12px !important;
+      color: #86efac !important;
+      margin-bottom: 18px !important;
+    }
+
+    .overlay-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-snitch-shop {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--ln);
+      color: var(--tx);
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-snitch-shop:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--gold);
+    }
+
     /* Mobile Adaptations */
     @media (max-width: 768px) {
       .navbar {
@@ -1305,11 +1965,14 @@
         <input type="text" id="catalogSearch" class="search-input" placeholder="Search wands, Nimbus brooms, house robes, cauldrons..." />
       </div>
 
-      <!-- Gringotts Vault Indicator -->
+      <!-- Gringotts Vault Indicator (Clickable to Deposit/Top-up) -->
       <div class="nav-actions">
-        <div class="vault-badge" title="Simulated Gringotts Wizarding Vault">
+        <button class="btn-snitch-nav" id="btnOpenSnitchGame" title="Play Golden Snitch Reflex Catch to earn Galleons!">
+          <span class="snitch-mini-icon">⚡</span> <span>Catch Snitch (+G)</span>
+        </button>
+        <div class="vault-badge" id="vaultBadge" title="Click to deposit +250 Galleons into your Gringotts Vault">
           <span>🏦 Vault:</span>
-          <b id="vaultBalance">🪙 50.00 G</b>
+          <b id="vaultBalance">🪙 1,000.00 G</b>
         </div>
       </div>
     </header>
@@ -1409,13 +2072,135 @@
           <button class="btn-ask-dobby" id="btnAskDobbyAboutItem">
             <span>🧦</span> Ask Dobby About This Item
           </button>
-          <button class="btn-add-cart" id="btnAddCart">
-            <span>🛒</span> Add to Bag
+          <button class="btn-buy-now" id="btnBuyNow">
+            <span>⚡</span> Buy Now
           </button>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- =========================================================================
+       Gringotts Payment Receipt Modal Popup
+       ========================================================================= -->
+  <div class="receipt-modal-backdrop" id="receiptModalBackdrop" aria-hidden="true">
+    <div class="purchase-receipt-modal" id="purchaseReceiptModal">
+      <div class="receipt-icon">📜✨</div>
+      <h3 class="receipt-title">Gringotts Payment Receipt</h3>
+      <div class="receipt-status-badge">Payment Confirmed</div>
+      
+      <div class="receipt-details">
+        <div class="receipt-row">
+          <span>Item Purchased:</span>
+          <strong id="receiptItemTitle">Ollivanders Wand</strong>
+        </div>
+        <div class="receipt-row">
+          <span>SKU:</span>
+          <code id="receiptItemSku">MAG-WAND-001</code>
+        </div>
+        <div class="receipt-row highlight">
+          <span>Amount Deducted:</span>
+          <strong class="receipt-deducted" id="receiptDeducted">- 7.00 Galleons (G)</strong>
+        </div>
+        <div class="receipt-row">
+          <span>Remaining Vault Balance:</span>
+          <strong id="receiptRemaining">🪙 993.00 G</strong>
+        </div>
+      </div>
+
+      <p class="receipt-owl-notice">
+        🦉 <strong>Owl Post Dispatched:</strong> The Enchanted Emporium has debited your Gringotts Vault. An owl has taken flight to deliver your package across Britain!
+      </p>
+
+      <div class="receipt-actions">
+        <button class="btn-receipt-close" id="btnReceiptClose">Done</button>
+        <button class="btn-ask-dobby-order" id="btnAskDobbyOrder">Ask Dobby About Delivery 🧦</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Golden Snitch Reflex Catch Mini-Game Modal
+       ========================================================================= -->
+  <div class="snitch-modal-backdrop" id="snitchModalBackdrop" aria-hidden="true">
+    <div class="snitch-modal-dialog">
+      <div class="snitch-modal-header">
+        <div class="snitch-modal-title-group">
+          <span class="snitch-badge-tag">⚡ Quidditch Pitch</span>
+          <h3 class="snitch-modal-title">Golden Snitch Reflex Catch</h3>
+          <p class="snitch-modal-sub">Darting across Diagon Alley sky • Catch the Snitch to earn real Galleons!</p>
+        </div>
+        <button class="btn-snitch-close" id="btnSnitchClose" aria-label="Close Mini-Game">✕</button>
+      </div>
+
+      <!-- Live Game HUD Bar -->
+      <div class="snitch-hud">
+        <div class="hud-item hud-timer">
+          <span class="hud-label">Time Remaining</span>
+          <span class="hud-val" id="snitchTimer">15.0s</span>
+        </div>
+        <div class="hud-item hud-catches">
+          <span class="hud-label">Snitches Caught</span>
+          <span class="hud-val" id="snitchCatches">0</span>
+        </div>
+        <div class="hud-item hud-earned">
+          <span class="hud-label">Galleons Won</span>
+          <span class="hud-val gold" id="snitchEarned">+0.00 G</span>
+        </div>
+        <div class="hud-item hud-streak">
+          <span class="hud-label">Multiplier</span>
+          <span class="hud-val purple" id="snitchMultiplier">1.0x</span>
+        </div>
+      </div>
+
+      <!-- Quidditch Pitch Playing Field -->
+      <div class="snitch-pitch" id="snitchPitch">
+        <!-- Stadium Background Elements -->
+        <div class="pitch-stars"></div>
+        <div class="pitch-moon"></div>
+        <div class="pitch-hoops">
+          <div class="hoop hoop-left"></div>
+          <div class="hoop hoop-mid"></div>
+          <div class="hoop hoop-right"></div>
+        </div>
+
+        <!-- The Golden Snitch Element -->
+        <div class="golden-snitch" id="goldenSnitch" style="display: none;">
+          <div class="snitch-wing snitch-wing-left"></div>
+          <div class="snitch-body"></div>
+          <div class="snitch-wing snitch-wing-right"></div>
+          <div class="snitch-glow"></div>
+        </div>
+
+        <!-- Overlay: Intro / Ready Screen -->
+        <div class="pitch-overlay" id="snitchIntroOverlay">
+          <div class="overlay-icon">🏆⚡</div>
+          <h4>Seeker Reflex Challenge</h4>
+          <p>The Golden Snitch flies fast and evades capture! Tap or click the fluttering Snitch as many times as you can in <strong>15 seconds</strong>.<br>Each catch awards <strong>+15 Galleons</strong> with streak multipliers!</p>
+          <button class="btn-snitch-start" id="btnSnitchStart">
+            <span>⚡</span> Release the Snitch (Start)
+          </button>
+        </div>
+
+        <!-- Overlay: Results / Victory Screen -->
+        <div class="pitch-overlay" id="snitchResultsOverlay" style="display: none;">
+          <div class="overlay-icon celebration">🎉🪙</div>
+          <h4>Match Concluded, Seeker!</h4>
+          <p id="snitchResultsSummary">You captured the Golden Snitch 3 times!</p>
+          <div class="snitch-payout-box">
+            <span>Vault Deposit:</span>
+            <strong id="snitchPayoutAmount">+45.00 Galleons</strong>
+          </div>
+          <p class="snitch-deposit-hint">Deposited straight into your Gringotts Vault balance!</p>
+          <div class="overlay-actions">
+            <button class="btn-snitch-restart" id="btnSnitchRestart">⚡ Play Again</button>
+            <button class="btn-snitch-shop" id="btnSnitchReturnShop">Return to Shop 🛍️</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- =========================================================================
        Floating AI Assistant Launcher Bubble (Bottom Right)
@@ -1503,6 +2288,38 @@
 
   <script>
     // =========================================================================
+    // Gringotts Vault Shopping Balance State
+    // =========================================================================
+    let vaultBalance = parseFloat(localStorage.getItem("gringotts_vault_balance") || "1000.00");
+    const vaultBadge = document.getElementById("vaultBadge");
+    const vaultBalanceEl = document.getElementById("vaultBalance");
+
+    function updateVaultDisplay() {
+      if (vaultBalanceEl) {
+        vaultBalanceEl.textContent = `🪙 ${vaultBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} G`;
+      }
+      localStorage.setItem("gringotts_vault_balance", vaultBalance.toFixed(2));
+    }
+
+    updateVaultDisplay();
+
+    // Click to top-up / deposit Galleons
+    vaultBadge.onclick = () => {
+      const topUp = confirm(`🏦 Gringotts Vault Account\n\nCurrent Balance: ${vaultBalance.toFixed(2)} Galleons (G).\n\nWould you like to withdraw +250.00 G from your Diagon Alley savings to top-up your shopping balance?`);
+      if (topUp) {
+        vaultBalance += 250.0;
+        updateVaultDisplay();
+      }
+    };
+
+    function parseGalleonPrice(priceStr) {
+      if (!priceStr) return 0.0;
+      const clean = priceStr.replace(/,/g, '');
+      const match = clean.match(/(\d+(?:\.\d+)?)/);
+      return match ? parseFloat(match[1]) : 0.0;
+    }
+
+    // =========================================================================
     // Catalog State & Category Mapping
     // =========================================================================
     let allProducts = [];
@@ -1572,13 +2389,8 @@
         card.innerHTML = `
           <div class="product-img-slot">
             <img src="/assets/products/${p.sku}.jpg" alt="${p.title}" 
-                 onerror="if (this.src.endsWith('.jpg')) { this.src = '/assets/products/' + '${p.sku}' + '.png'; } else if (this.src.endsWith('.png')) { this.src = '/assets/products/' + '${p.sku}' + '.webp'; } else { this.style.display='none'; this.nextElementSibling.style.display='flex'; }" 
+                 onerror="if (this.src.endsWith('.jpg')) { this.src = '/assets/products/' + '${p.sku}' + '.png'; } else if (this.src.endsWith('.png')) { this.src = '/assets/products/' + '${p.sku}' + '.webp'; } else { this.style.display='none'; }" 
                  loading="lazy" />
-            <div class="img-placeholder">
-              <span class="placeholder-icon">${icon}</span>
-              <span class="placeholder-text">Image Slot</span>
-              <span class="placeholder-hint">assets/products/${p.sku}.jpg</span>
-            </div>
           </div>
           <div class="product-info">
             <h4 class="product-title">${p.title}</h4>
@@ -1611,7 +2423,7 @@
     const modalNote = document.getElementById("modalNote");
     const modalNoteWrapper = document.getElementById("modalNoteWrapper");
     const btnAskDobbyAboutItem = document.getElementById("btnAskDobbyAboutItem");
-    const btnAddCart = document.getElementById("btnAddCart");
+    const btnBuyNow = document.getElementById("btnBuyNow");
 
     function openProductModal(p) {
       activeProduct = p;
@@ -1637,7 +2449,7 @@
           modalImg.src = `/assets/products/${p.sku}.webp`;
         } else {
           modalImg.style.display = "none";
-          modalPlaceholder.style.display = "flex";
+          modalPlaceholder.style.display = "none";
         }
       };
 
@@ -1672,8 +2484,10 @@
     };
 
     document.addEventListener("keydown", e => {
-      if (e.key === "Escape" && modalBackdrop.classList.contains("open")) {
-        closeProductModal();
+      if (e.key === "Escape") {
+        if (snitchModalBackdrop.classList.contains("open")) closeSnitchGameModal();
+        else if (receiptModalBackdrop.classList.contains("open")) closeReceiptModal();
+        else if (modalBackdrop.classList.contains("open")) closeProductModal();
       }
     });
 
@@ -1688,9 +2502,316 @@
       chatForm.dispatchEvent(new Event("submit"));
     };
 
-    btnAddCart.onclick = () => {
+    // =========================================================================
+    // Buy Now Shopping Mechanism & Money Deduction
+    // =========================================================================
+    const receiptModalBackdrop = document.getElementById("receiptModalBackdrop");
+    const btnReceiptClose = document.getElementById("btnReceiptClose");
+    const btnAskDobbyOrder = document.getElementById("btnAskDobbyOrder");
+    const receiptItemTitle = document.getElementById("receiptItemTitle");
+    const receiptItemSku = document.getElementById("receiptItemSku");
+    const receiptDeducted = document.getElementById("receiptDeducted");
+    const receiptRemaining = document.getElementById("receiptRemaining");
+
+    function openReceiptModal(item, deductedAmount, remainingAmount) {
+      receiptItemTitle.textContent = item.title;
+      receiptItemSku.textContent = item.sku;
+      receiptDeducted.textContent = `- ${deductedAmount.toFixed(2)} Galleons (G)`;
+      receiptRemaining.textContent = `🪙 ${remainingAmount.toFixed(2)} G`;
+
+      receiptModalBackdrop.classList.add("open");
+      receiptModalBackdrop.setAttribute("aria-hidden", "false");
+    }
+
+    function closeReceiptModal() {
+      receiptModalBackdrop.classList.remove("open");
+      receiptModalBackdrop.setAttribute("aria-hidden", "true");
+    }
+
+    btnReceiptClose.onclick = closeReceiptModal;
+    receiptModalBackdrop.onclick = e => {
+      if (e.target === receiptModalBackdrop) closeReceiptModal();
+    };
+
+
+    // =========================================================================
+    // Web Audio Magical Sound Synthesizers (No external files required)
+    // =========================================================================
+    function playSnitchChime() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.28);
+        gain.gain.setValueAtTime(0.25, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.32);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.32);
+      } catch (e) { }
+    }
+
+    function playVictoryChime() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.08);
+          gain.gain.setValueAtTime(0.2, ctx.currentTime + idx * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.08 + 0.35);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + idx * 0.08);
+          osc.stop(ctx.currentTime + idx * 0.08 + 0.38);
+        });
+      } catch (e) { }
+    }
+
+    // =========================================================================
+    // Golden Snitch Reflex Catch Mini-Game Engine
+    // =========================================================================
+    const snitchModalBackdrop = document.getElementById("snitchModalBackdrop");
+    const btnOpenSnitchGame = document.getElementById("btnOpenSnitchGame");
+    const btnSnitchClose = document.getElementById("btnSnitchClose");
+    const btnSnitchStart = document.getElementById("btnSnitchStart");
+    const btnSnitchRestart = document.getElementById("btnSnitchRestart");
+    const btnSnitchReturnShop = document.getElementById("btnSnitchReturnShop");
+    const goldenSnitch = document.getElementById("goldenSnitch");
+    const snitchPitch = document.getElementById("snitchPitch");
+    const snitchIntroOverlay = document.getElementById("snitchIntroOverlay");
+    const snitchResultsOverlay = document.getElementById("snitchResultsOverlay");
+    const snitchTimerEl = document.getElementById("snitchTimer");
+    const snitchCatchesEl = document.getElementById("snitchCatches");
+    const snitchEarnedEl = document.getElementById("snitchEarned");
+    const snitchMultiplierEl = document.getElementById("snitchMultiplier");
+    const snitchResultsSummary = document.getElementById("snitchResultsSummary");
+    const snitchPayoutAmount = document.getElementById("snitchPayoutAmount");
+
+    let snitchGameActive = false;
+    let snitchTimerInterval = null;
+    let snitchMoveTimeout = null;
+    let snitchTimeLeft = 15.0;
+    let snitchCatchesCount = 0;
+    let snitchEarnedGalleons = 0;
+    let snitchStreak = 0;
+
+    function openSnitchGameModal() {
+      snitchModalBackdrop.classList.add("open");
+      snitchModalBackdrop.setAttribute("aria-hidden", "false");
+      resetSnitchGameUI();
+    }
+
+    function closeSnitchGameModal() {
+      stopSnitchGame();
+      snitchModalBackdrop.classList.remove("open");
+      snitchModalBackdrop.setAttribute("aria-hidden", "true");
+    }
+
+    function resetSnitchGameUI() {
+      stopSnitchGame();
+      snitchTimeLeft = 15.0;
+      snitchCatchesCount = 0;
+      snitchEarnedGalleons = 0;
+      snitchStreak = 0;
+
+      snitchTimerEl.textContent = "15.0s";
+      snitchCatchesEl.textContent = "0";
+      snitchEarnedEl.textContent = "+0.00 G";
+      snitchMultiplierEl.textContent = "1.0x";
+
+      goldenSnitch.style.display = "none";
+      snitchIntroOverlay.style.display = "flex";
+      snitchResultsOverlay.style.display = "none";
+    }
+
+    function startSnitchGame() {
+      resetSnitchGameUI();
+      snitchIntroOverlay.style.display = "none";
+      snitchResultsOverlay.style.display = "none";
+      goldenSnitch.style.display = "flex";
+      snitchGameActive = true;
+
+      // Position snitch in center initially
+      const pitchRect = snitchPitch.getBoundingClientRect();
+      const w = pitchRect.width || 600;
+      const h = pitchRect.height || 380;
+      goldenSnitch.style.left = (w / 2 - 24) + "px";
+      goldenSnitch.style.top = (h / 2 - 24) + "px";
+
+      playSnitchChime();
+      scheduleSnitchFlight();
+
+      const startTime = performance.now();
+      const totalDuration = 15.0;
+
+      snitchTimerInterval = setInterval(() => {
+        if (!snitchGameActive) return;
+        const elapsed = (performance.now() - startTime) / 1000;
+        snitchTimeLeft = Math.max(0, totalDuration - elapsed);
+        snitchTimerEl.textContent = snitchTimeLeft.toFixed(1) + "s";
+
+        if (snitchTimeLeft <= 0) {
+          endSnitchGame();
+        }
+      }, 50);
+    }
+
+    function scheduleSnitchFlight() {
+      if (!snitchGameActive) return;
+      const pitchRect = snitchPitch.getBoundingClientRect();
+      const w = Math.max(300, pitchRect.width || 600);
+      const h = Math.max(250, pitchRect.height || 380);
+
+      const margin = 50;
+      const targetX = margin + Math.random() * (w - margin * 2 - 48);
+      const targetY = margin + Math.random() * (h - margin * 2 - 48);
+
+      // Speed increases as catches increase
+      const speed = Math.max(350, 800 - snitchCatchesCount * 30);
+      goldenSnitch.style.transition = `all ${speed / 1000}s cubic-bezier(0.25, 1, 0.5, 1)`;
+      goldenSnitch.style.left = targetX + "px";
+      goldenSnitch.style.top = targetY + "px";
+
+      snitchMoveTimeout = setTimeout(() => {
+        scheduleSnitchFlight();
+      }, speed + 50 + Math.random() * 200);
+    }
+
+    function spawnSnitchCatchFX(x, y, text) {
+      // Floating points indicator
+      const txt = document.createElement("div");
+      txt.className = "snitch-float-points";
+      txt.textContent = text;
+      txt.style.left = x + "px";
+      txt.style.top = y + "px";
+      snitchPitch.appendChild(txt);
+      setTimeout(() => txt.remove(), 700);
+
+      // Expanding burst ripple
+      const ring = document.createElement("div");
+      ring.className = "snitch-burst-ring";
+      ring.style.left = (x + 24) + "px";
+      ring.style.top = (y + 24) + "px";
+      snitchPitch.appendChild(ring);
+      setTimeout(() => ring.remove(), 500);
+    }
+
+    goldenSnitch.onpointerdown = e => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!snitchGameActive) return;
+
+      snitchCatchesCount++;
+      snitchStreak++;
+
+      // Multiplier increases with streak (max 2.5x)
+      const mult = Math.min(2.5, 1.0 + (snitchStreak - 1) * 0.2);
+      const award = Math.round(15 * mult);
+      snitchEarnedGalleons += award;
+
+      snitchCatchesEl.textContent = snitchCatchesCount;
+      snitchMultiplierEl.textContent = mult.toFixed(1) + "x";
+      snitchEarnedEl.textContent = `+${snitchEarnedGalleons.toFixed(2)} G`;
+
+      playSnitchChime();
+
+      // Show VFX at click location
+      const curX = parseFloat(goldenSnitch.style.left) || 100;
+      const curY = parseFloat(goldenSnitch.style.top) || 100;
+      spawnSnitchCatchFX(curX, curY, `+${award} G!`);
+
+      // Immediately evade to another spot
+      if (snitchMoveTimeout) clearTimeout(snitchMoveTimeout);
+      scheduleSnitchFlight();
+    };
+
+    function stopSnitchGame() {
+      snitchGameActive = false;
+      if (snitchTimerInterval) {
+        clearInterval(snitchTimerInterval);
+        snitchTimerInterval = null;
+      }
+      if (snitchMoveTimeout) {
+        clearTimeout(snitchMoveTimeout);
+        snitchMoveTimeout = null;
+      }
+    }
+
+    function endSnitchGame() {
+      stopSnitchGame();
+      goldenSnitch.style.display = "none";
+
+      // Deposit earnings into Gringotts Vault
+      if (snitchEarnedGalleons > 0) {
+        vaultBalance += snitchEarnedGalleons;
+        updateVaultDisplay();
+        playVictoryChime();
+      }
+
+      snitchResultsSummary.textContent = `You captured the Golden Snitch ${snitchCatchesCount} time${snitchCatchesCount === 1 ? '' : 's'}!`;
+      snitchPayoutAmount.textContent = `+${snitchEarnedGalleons.toFixed(2)} Galleons`;
+      snitchResultsOverlay.style.display = "flex";
+    }
+
+    btnOpenSnitchGame.onclick = openSnitchGameModal;
+    btnSnitchClose.onclick = closeSnitchGameModal;
+    btnSnitchStart.onclick = startSnitchGame;
+    btnSnitchRestart.onclick = startSnitchGame;
+    btnSnitchReturnShop.onclick = closeSnitchGameModal;
+    snitchModalBackdrop.onclick = e => {
+      if (e.target === snitchModalBackdrop) closeSnitchGameModal();
+    };
+
+    btnAskDobbyOrder.onclick = () => {
       if (!activeProduct) return;
-      alert(`✨ Added ${activeProduct.title} (${activeProduct.price}) to your Gringotts Shopping Vault!`);
+      const item = activeProduct;
+      closeReceiptModal();
+      openChatWindow();
+
+      const q = `Dobby, I just purchased the ${item.title} [${item.sku}]! How fast will the owls deliver it, and what is your return policy under [RET-01]?`;
+      chatInput.value = q;
+      chatForm.dispatchEvent(new Event("submit"));
+    };
+
+    btnBuyNow.onclick = () => {
+      if (!activeProduct) return;
+      const cost = parseGalleonPrice(activeProduct.price);
+
+      // Check account balance
+      if (vaultBalance < cost) {
+        const deficit = (cost - vaultBalance).toFixed(2);
+        const playMiniGame = confirm(
+          `⚠️ Insufficient Galleons in your Gringotts Vault!\n\n` +
+          `Item: ${activeProduct.title}\n` +
+          `Cost: ${cost.toFixed(2)} Galleons (G)\n` +
+          `Your Balance: ${vaultBalance.toFixed(2)} Galleons (G)\n` +
+          `Deficit: ${deficit} Galleons (G)\n\n` +
+          `⚡ Would you like to play the Golden Snitch Reflex Catch mini-game right now to earn Galleons?`
+        );
+        if (playMiniGame) {
+          closeProductModal();
+          openSnitchGameModal();
+        }
+        return;
+      }
+
+      // Deduct money from account
+      vaultBalance -= cost;
+      updateVaultDisplay();
+
+      // Show receipt popup detailing money deducted
+      const purchased = activeProduct;
+      closeProductModal();
+      openReceiptModal(purchased, cost, vaultBalance);
     };
 
     // Filter bar event listener
