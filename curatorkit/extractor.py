@@ -20,6 +20,9 @@ class PolicyClause:
     clause_title: str
     clause_text: str
     citation_handle: str
+    product_name: str = ""
+    price: str = ""
+    category: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -68,6 +71,15 @@ class PolicyExtractor:
                 else:
                     citation_handle = f"[{clause_id}]"
 
+                price_match = re.search(r"Price:\s*(\$[\d,]+(?:\.\d{2})?)", body)
+                price = price_match.group(1) if price_match else ""
+
+                cat_match = re.search(r"Category:\s*([^|\n]+)", body)
+                category = cat_match.group(1).strip() if cat_match else sec_title
+
+                prod_match = re.search(r"Product Name:\s*([^\n|]+)", body)
+                product_name = prod_match.group(1).strip() if prod_match else clause_title
+
                 clauses.append(PolicyClause(
                     doc_id=doc_id,
                     reg_references="E-Commerce Store Policies & Official Catalog",
@@ -76,7 +88,10 @@ class PolicyExtractor:
                     clause_id=clause_id,
                     clause_title=clause_title,
                     clause_text=body,
-                    citation_handle=citation_handle
+                    citation_handle=citation_handle,
+                    product_name=product_name,
+                    price=price,
+                    category=category,
                 ))
         return clauses
 

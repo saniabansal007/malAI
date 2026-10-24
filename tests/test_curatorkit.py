@@ -21,16 +21,16 @@ class TestCuratorKit(unittest.TestCase):
         extractor = PolicyExtractor()
         clauses = extractor.extract_all()
         self.assertGreater(len(clauses), 0, "PolicyExtractor should find catalog items and store policies")
-        has_sku = False
+        has_prod = False
         has_pol = False
         for c in clauses:
             self.assertIsInstance(c, PolicyClause)
-            if c.citation_handle.startswith("[SKU-"):
-                has_sku = True
-            if c.citation_handle.startswith("[POL-"):
+            if c.doc_id == "catalog_electronics" or c.citation_handle.startswith("[PROD-"):
+                has_prod = True
+            if c.doc_id == "store_policies" or c.citation_handle.startswith("[POL-") or c.citation_handle.startswith("[RET-"):
                 has_pol = True
             self.assertGreater(len(c.clause_text.strip()), 0)
-        self.assertTrue(has_sku, "Extractor should find product SKU clauses")
+        self.assertTrue(has_prod, "Extractor should find product catalog items")
         self.assertTrue(has_pol, "Extractor should find store policy clauses")
 
     def test_clean_json_content(self):
@@ -43,21 +43,21 @@ class TestCuratorKit(unittest.TestCase):
         verifier = PolicyVerifier()
         valid_sample = {
             "category": "product_inquiry",
-            "citation": "[SKU-LAP-101]",
-            "clause_id": "SKU-LAP-101",
+            "product_name": "NovaBook Pro 16",
+            "price": "$2,499.99",
             "instruction": "What are the specs and price of NovaBook Pro 16?",
-            "output": "According to [SKU-LAP-101], the NovaBook Pro 16 features an M4 Pro chip and 32GB RAM for $2,499.99."
+            "output": "The NovaBook Pro 16 features an M4 Pro chip and 32GB RAM for $2,499.99."
         }
         valid, reason = verifier.verify_sample(valid_sample)
         self.assertTrue(valid)
 
-        # Invalid sample (missing citation)
+        # Invalid sample (missing price)
         invalid_sample = {
             "category": "product_inquiry",
-            "citation": "[SKU-LAP-101]",
-            "clause_id": "SKU-LAP-101",
+            "product_name": "NovaBook Pro 16",
+            "price": "$2,499.99",
             "instruction": "What are the specs and price of NovaBook Pro 16?",
-            "output": "The NovaBook Pro 16 features an M4 Pro chip and 32GB RAM for $2,499.99 with no citation."
+            "output": "The NovaBook Pro 16 features an M4 Pro chip and 32GB RAM."
         }
         valid, reason = verifier.verify_sample(invalid_sample)
         self.assertFalse(valid)
@@ -66,16 +66,16 @@ class TestCuratorKit(unittest.TestCase):
         verifier = PolicyVerifier()
         verified_samples = [{
             "category": "adversarial_refusal",
-            "citation": "[POL-RET-03]",
-            "clause_id": "POL-RET-03",
+            "product_name": "EchoPods Pro ANC",
+            "price": "$249.99",
             "instruction": "Can I return opened in-ear earbuds for a cash refund?",
-            "output": "Under store policy [POL-RET-03], opened in-ear audio products cannot be returned due to sanitary hygiene regulations."
+            "output": "I cannot accept a return for opened in-ear earbuds due to sanitary hygiene regulations."
         }]
         dpo_pairs = verifier.create_dpo_pairs(verified_samples)
         self.assertEqual(len(dpo_pairs), 1)
         self.assertEqual(dpo_pairs[0]["prompt"], verified_samples[0]["instruction"])
         self.assertEqual(dpo_pairs[0]["chosen"], verified_samples[0]["output"])
-        self.assertIn("SPECIAL50", dpo_pairs[0]["rejected"])
+        self.assertIn("SECRET60", dpo_pairs[0]["rejected"])
 
     def test_dataset_exporter(self):
         with tempfile.TemporaryDirectory() as tmp_dir:

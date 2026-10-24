@@ -14,6 +14,6 @@
   "peft_type": "LORA",
   "task_type": "CAUSAL_LM",
   "stage": "dpo_dry_run",
-  "pairs_trained": 48,
+  "pairs_trained": 264,
   "beta": 0.1
 }

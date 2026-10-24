@@ -60,40 +60,41 @@ async def chat(req: Request):
         u_lower = user_msg.lower()
         if "laptop" in u_lower:
             reply = (
-                "For a lightweight and portable laptop under $1,000, I recommend the **NovaBook Slim 14** [SKU-LAP-103] at **$899.99**.\n\n"
-                "- **Processor:** AMD Ryzen 7 8840HS\n"
-                "- **Memory & Storage:** 16GB LPDDR5X, 512GB Gen4 NVMe SSD\n"
-                "- **Display:** 14-inch 2.8K OLED (120Hz, 100% DCI-P3)\n"
+                "For a lightweight and portable laptop under $1,000, I recommend the **NovaBook Slim 14**, currently on sale for **$899.99**.\n\n"
+                "- **Processor:** AMD Ryzen 7 8840HS (8 cores / 16 threads)\n"
+                "- **Memory & Storage:** 16GB LPDDR5X RAM, 512GB PCIe 4.0 NVMe SSD\n"
+                "- **Display:** 14-inch 2.8K OLED (120Hz, 100% DCI-P3 color gamut)\n"
                 "- **Battery Life:** Up to 18 hours\n"
-                "- **Weight:** 1.28 kg (2.82 lbs)\n\n"
-                "It is in stock and qualifies for **Free Standard Ground Shipping** [POL-SHIP-01]!"
+                "- **Weight:** 1.25 kg ultra-light aluminum unibody\n\n"
+                "It is in stock and qualifies for **Free Standard Ground Shipping**!"
             )
         elif "return" in u_lower:
             reply = (
-                "Here is an overview of our **Store Return Policy** [POL-RET-01]:\n\n"
-                "1. **30-Day Window:** Unopened items in original factory packaging qualify for a 100% refund [POL-RET-01].\n"
-                "2. **Open-Box Restocking Fee:** Opened items in like-new condition are subject to a **15% restocking fee** [POL-RET-02].\n"
-                "3. **Hygiene Exclusion:** Opened in-ear headphones (such as EchoPods) cannot be returned due to sanitary hygiene standards [POL-RET-03].\n"
-                "4. **Defective on Arrival (DOA):** Claims filed within 72 hours receive immediate replacement with prepaid shipping [POL-RET-04]."
+                "Here is an overview of our customer-friendly **Store Return Policy**:\n\n"
+                "1. **30-Day Window:** Unopened items in original factory packaging qualify for a **100% full refund**.\n"
+                "2. **Open-Box Restocking Fee:** Opened items in like-new condition are subject to a **15% restocking fee**.\n"
+                "3. **Hygiene Exclusion:** Opened in-ear headphones (such as EchoPods) cannot be returned due to sanitary hygiene regulations.\n"
+                "4. **Defective on Arrival (DOA):** Claims filed within 48 hours receive immediate free replacement with prepaid return shipping."
             )
         elif "compare" in u_lower or "echopods" in u_lower:
             reply = (
-                "Here is a side-by-side comparison between **EchoPods Pro ANC** [SKU-AUD-201] and **EchoBuds Sport** [SKU-AUD-203]:\n\n"
-                "| Specification | EchoPods Pro ANC [SKU-AUD-201] | EchoBuds Sport [SKU-AUD-203] |\n"
+                "Here is a side-by-side comparison between **EchoPods Pro ANC** and **EchoBuds Sport**:\n\n"
+                "| Specification | EchoPods Pro ANC | EchoBuds Sport |\n"
                 "| :--- | :--- | :--- |\n"
-                "| **Price** | $249.99 | $89.99 |\n"
+                "| **Price** | **$249.99** | **$89.99** |\n"
                 "| **Noise Cancellation** | Hybrid ANC (up to 45dB) | Passive Noise Isolation |\n"
                 "| **Battery Life** | 8h earbuds / 30h with case | 9h earbuds / 32h with case |\n"
                 "| **Water Resistance** | IPX5 (Sweat/Splash) | IP68 (Waterproof & Dustproof) |\n"
                 "| **Drivers** | 11mm Beryllium drivers | 10mm Graphene drivers |\n\n"
-                "Both products come with a **1-Year Manufacturer Warranty** [POL-WAR-01]."
+                "Both products come with our standard **1-Year Manufacturer Warranty** and free shipping!"
             )
         else:
             reply = (
                 "👋 Hello! I am your **NovaTech AI Shopping Assistant**.\n\n"
-                "I can help you explore our electronics catalog [SKU-LAP-101], check product specifications, "
-                "or explain store policies including **Free Ground Shipping over $50** [POL-SHIP-01], **30-Day Returns** [POL-RET-01], "
-                "and **14-Day Price Match Guarantees** [POL-PRICE-01]."
+                "I can help you explore our electronics catalog, check product specifications and stock, "
+                "or explain store policies including **Free Ground Shipping on orders over $50**, our **30-Day Return Policy**, "
+                "and **14-Day Price Match Guarantees**.\n\n"
+                "What kind of product or budget are you looking for today?"
             )
         texts = [("<think>Thinking...</think>\n\n" if think else "") + reply] * b.get("n", 1)
     if not b.get("stream"):

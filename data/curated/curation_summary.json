@@ -1,12 +1,12 @@
 {
-  "total_verified_samples": 57,
-  "sft_train_count": 48,
-  "sft_val_count": 9,
-  "dpo_pairs_count": 57,
+  "total_verified_samples": 311,
+  "sft_train_count": 264,
+  "sft_val_count": 47,
+  "dpo_pairs_count": 311,
   "category_distribution": {
-    "product_inquiry": 22,
-    "adversarial_refusal": 23,
-    "policy_qa": 12
+    "product_inquiry": 249,
+    "adversarial_refusal": 45,
+    "policy_qa": 17
   },
   "export_files": {
     "sft_train": "data/curated/sft_train.jsonl",
