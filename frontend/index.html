@@ -176,7 +176,7 @@
       pointer-events: none;
     }
 
-    /* Vault & Cart Status */
+    /* Vault Indicator (Interactive Deposit) */
     .nav-actions {
       display: flex;
       align-items: center;
@@ -189,15 +189,25 @@
       gap: 8px;
       background: rgba(245, 158, 11, 0.08);
       border: 1px solid var(--ln);
-      padding: 7px 14px;
+      padding: 7px 15px;
       border-radius: 999px;
       font-size: 12.5px;
       color: #fde68a;
       font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+
+    .vault-badge:hover {
+      background: rgba(245, 158, 11, 0.16);
+      border-color: var(--gold);
+      transform: translateY(-1px);
     }
 
     .vault-badge b {
       color: var(--gold-light);
+      font-size: 13px;
     }
 
     /* ==========================================================================
@@ -492,7 +502,7 @@
     }
 
     /* ==========================================================================
-       Product Quick-View Modal Popup (Shows All Details)
+       Product Quick-View Modal Popup (Shows All Specifications & Policies)
        ========================================================================== */
     .modal-backdrop {
       position: fixed;
@@ -666,7 +676,7 @@
 
     .modal-actions {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       margin-top: auto;
       padding-top: 14px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -695,30 +705,203 @@
       transform: translateY(-1px);
     }
 
-    .btn-add-cart {
-      background: linear-gradient(135deg, #d97706, #b45309);
-      border: 1px solid rgba(245, 158, 11, 0.5);
+    /* Buy Now Button */
+    .btn-buy-now {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      border: 1px solid #fbbf24;
       color: #0b0d14;
-      padding: 11px 18px;
+      padding: 11px 22px;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      gap: 7px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+    }
+
+    .btn-buy-now:hover {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-buy-now:active {
+      transform: translateY(1px);
+    }
+
+    /* ==========================================================================
+       Gringotts Payment Receipt Modal Popup
+       ========================================================================== */
+    .receipt-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 2500;
+      background: rgba(6, 8, 14, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .receipt-modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .purchase-receipt-modal {
+      background: linear-gradient(180deg, #161b2a 0%, #0d101a 100%);
+      border: 1px solid var(--gold);
+      border-radius: var(--radius-lg);
+      max-width: 480px;
+      width: 100%;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 1px 1px rgba(245, 158, 11, 0.35);
+      position: relative;
+      transform: translateY(20px) scale(0.97);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .receipt-modal-backdrop.open .purchase-receipt-modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .receipt-icon {
+      font-size: 46px;
+      margin-bottom: 6px;
+      filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.45));
+    }
+
+    .receipt-title {
+      font-family: 'Cinzel', serif;
+      font-size: 21px;
+      font-weight: 800;
+      color: #fef3c7;
+      margin-bottom: 6px;
+    }
+
+    .receipt-status-badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 3px 12px;
+      border-radius: 999px;
+      margin-bottom: 20px;
+    }
+
+    .receipt-details {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--ln);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 18px;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    .receipt-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #cbd5e1;
+    }
+
+    .receipt-row strong {
+      color: #f8fafc;
+    }
+
+    .receipt-row code {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--gold-light);
+    }
+
+    .receipt-row.highlight {
+      padding: 8px 10px;
+      background: rgba(245, 158, 11, 0.1);
+      border-radius: 6px;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+
+    .receipt-deducted {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--gold-light);
+      text-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+    }
+
+    .receipt-owl-notice {
+      font-size: 12.5px;
+      color: #94a3b8;
+      line-height: 1.5;
+      margin-bottom: 22px;
+      background: rgba(168, 85, 247, 0.05);
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(168, 85, 247, 0.15);
+    }
+
+    .receipt-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-receipt-close {
+      flex: 1;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border: 1px solid var(--gold-light);
+      color: #0b0d14;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
       transition: all 0.2s ease;
     }
 
-    .btn-add-cart:hover {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
-      transform: translateY(-1px);
+    .btn-receipt-close:hover {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+    }
+
+    .btn-ask-dobby-order {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #f8fafc;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-ask-dobby-order:hover {
+      background: rgba(168, 85, 247, 0.2);
+      border-color: var(--purple);
+      color: #ffffff;
     }
 
     /* ==========================================================================
        Floating AI Assistant Launcher Bubble (Bottom Right)
-       ========================================================================= */
+       ========================================================================== */
     .chat-launcher {
       position: fixed;
       bottom: 28px;
@@ -1305,11 +1488,11 @@
         <input type="text" id="catalogSearch" class="search-input" placeholder="Search wands, Nimbus brooms, house robes, cauldrons..." />
       </div>
 
-      <!-- Gringotts Vault Indicator -->
+      <!-- Gringotts Vault Indicator (Clickable to Deposit/Top-up) -->
       <div class="nav-actions">
-        <div class="vault-badge" title="Simulated Gringotts Wizarding Vault">
+        <div class="vault-badge" id="vaultBadge" title="Click to deposit +250 Galleons into your Gringotts Vault">
           <span>🏦 Vault:</span>
-          <b id="vaultBalance">🪙 50.00 G</b>
+          <b id="vaultBalance">🪙 1,000.00 G</b>
         </div>
       </div>
     </header>
@@ -1409,10 +1592,49 @@
           <button class="btn-ask-dobby" id="btnAskDobbyAboutItem">
             <span>🧦</span> Ask Dobby About This Item
           </button>
-          <button class="btn-add-cart" id="btnAddCart">
-            <span>🛒</span> Add to Bag
+          <button class="btn-buy-now" id="btnBuyNow">
+            <span>⚡</span> Buy Now
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Gringotts Payment Receipt Modal Popup
+       ========================================================================= -->
+  <div class="receipt-modal-backdrop" id="receiptModalBackdrop" aria-hidden="true">
+    <div class="purchase-receipt-modal" id="purchaseReceiptModal">
+      <div class="receipt-icon">📜✨</div>
+      <h3 class="receipt-title">Gringotts Payment Receipt</h3>
+      <div class="receipt-status-badge">Payment Confirmed</div>
+      
+      <div class="receipt-details">
+        <div class="receipt-row">
+          <span>Item Purchased:</span>
+          <strong id="receiptItemTitle">Ollivanders Wand</strong>
+        </div>
+        <div class="receipt-row">
+          <span>SKU:</span>
+          <code id="receiptItemSku">MAG-WAND-001</code>
+        </div>
+        <div class="receipt-row highlight">
+          <span>Amount Deducted:</span>
+          <strong class="receipt-deducted" id="receiptDeducted">- 7.00 Galleons (G)</strong>
+        </div>
+        <div class="receipt-row">
+          <span>Remaining Vault Balance:</span>
+          <strong id="receiptRemaining">🪙 993.00 G</strong>
+        </div>
+      </div>
+
+      <p class="receipt-owl-notice">
+        🦉 <strong>Owl Post Dispatched:</strong> The Enchanted Emporium has debited your Gringotts Vault. An owl has taken flight to deliver your package across Britain!
+      </p>
+
+      <div class="receipt-actions">
+        <button class="btn-receipt-close" id="btnReceiptClose">Done</button>
+        <button class="btn-ask-dobby-order" id="btnAskDobbyOrder">Ask Dobby About Delivery 🧦</button>
       </div>
     </div>
   </div>
@@ -1502,6 +1724,38 @@
   </div>
 
   <script>
+    // =========================================================================
+    // Gringotts Vault Shopping Balance State
+    // =========================================================================
+    let vaultBalance = parseFloat(localStorage.getItem("gringotts_vault_balance") || "1000.00");
+    const vaultBadge = document.getElementById("vaultBadge");
+    const vaultBalanceEl = document.getElementById("vaultBalance");
+
+    function updateVaultDisplay() {
+      if (vaultBalanceEl) {
+        vaultBalanceEl.textContent = `🪙 ${vaultBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} G`;
+      }
+      localStorage.setItem("gringotts_vault_balance", vaultBalance.toFixed(2));
+    }
+
+    updateVaultDisplay();
+
+    // Click to top-up / deposit Galleons
+    vaultBadge.onclick = () => {
+      const topUp = confirm(`🏦 Gringotts Vault Account\n\nCurrent Balance: ${vaultBalance.toFixed(2)} Galleons (G).\n\nWould you like to withdraw +250.00 G from your Diagon Alley savings to top-up your shopping balance?`);
+      if (topUp) {
+        vaultBalance += 250.0;
+        updateVaultDisplay();
+      }
+    };
+
+    function parseGalleonPrice(priceStr) {
+      if (!priceStr) return 0.0;
+      const clean = priceStr.replace(/,/g, '');
+      const match = clean.match(/(\d+(?:\.\d+)?)/);
+      return match ? parseFloat(match[1]) : 0.0;
+    }
+
     // =========================================================================
     // Catalog State & Category Mapping
     // =========================================================================
@@ -1611,7 +1865,7 @@
     const modalNote = document.getElementById("modalNote");
     const modalNoteWrapper = document.getElementById("modalNoteWrapper");
     const btnAskDobbyAboutItem = document.getElementById("btnAskDobbyAboutItem");
-    const btnAddCart = document.getElementById("btnAddCart");
+    const btnBuyNow = document.getElementById("btnBuyNow");
 
     function openProductModal(p) {
       activeProduct = p;
@@ -1666,8 +1920,9 @@
     };
 
     document.addEventListener("keydown", e => {
-      if (e.key === "Escape" && modalBackdrop.classList.contains("open")) {
-        closeProductModal();
+      if (e.key === "Escape") {
+        if (receiptModalBackdrop.classList.contains("open")) closeReceiptModal();
+        else if (modalBackdrop.classList.contains("open")) closeProductModal();
       }
     });
 
@@ -1682,9 +1937,72 @@
       chatForm.dispatchEvent(new Event("submit"));
     };
 
-    btnAddCart.onclick = () => {
+    // =========================================================================
+    // Buy Now Shopping Mechanism & Money Deduction
+    // =========================================================================
+    const receiptModalBackdrop = document.getElementById("receiptModalBackdrop");
+    const btnReceiptClose = document.getElementById("btnReceiptClose");
+    const btnAskDobbyOrder = document.getElementById("btnAskDobbyOrder");
+    const receiptItemTitle = document.getElementById("receiptItemTitle");
+    const receiptItemSku = document.getElementById("receiptItemSku");
+    const receiptDeducted = document.getElementById("receiptDeducted");
+    const receiptRemaining = document.getElementById("receiptRemaining");
+
+    function openReceiptModal(item, deductedAmount, remainingAmount) {
+      receiptItemTitle.textContent = item.title;
+      receiptItemSku.textContent = item.sku;
+      receiptDeducted.textContent = `- ${deductedAmount.toFixed(2)} Galleons (G)`;
+      receiptRemaining.textContent = `🪙 ${remainingAmount.toFixed(2)} G`;
+
+      receiptModalBackdrop.classList.add("open");
+      receiptModalBackdrop.setAttribute("aria-hidden", "false");
+    }
+
+    function closeReceiptModal() {
+      receiptModalBackdrop.classList.remove("open");
+      receiptModalBackdrop.setAttribute("aria-hidden", "true");
+    }
+
+    btnReceiptClose.onclick = closeReceiptModal;
+    receiptModalBackdrop.onclick = e => {
+      if (e.target === receiptModalBackdrop) closeReceiptModal();
+    };
+
+    btnAskDobbyOrder.onclick = () => {
       if (!activeProduct) return;
-      alert(`✨ Added ${activeProduct.title} (${activeProduct.price}) to your Gringotts Shopping Vault!`);
+      const item = activeProduct;
+      closeReceiptModal();
+      openChatWindow();
+
+      const q = `Dobby, I just purchased the ${item.title} [${item.sku}]! How fast will the owls deliver it, and what is your return policy under [RET-01]?`;
+      chatInput.value = q;
+      chatForm.dispatchEvent(new Event("submit"));
+    };
+
+    btnBuyNow.onclick = () => {
+      if (!activeProduct) return;
+      const cost = parseGalleonPrice(activeProduct.price);
+
+      // Check account balance
+      if (vaultBalance < cost) {
+        alert(
+          `⚠️ Insufficient Galleons in your Gringotts Vault!\n\n` +
+          `Item: ${activeProduct.title}\n` +
+          `Cost: ${cost.toFixed(2)} Galleons (G)\n` +
+          `Your Balance: ${vaultBalance.toFixed(2)} Galleons (G)\n\n` +
+          `Dobby cannot allow debt to Gringotts goblins! Please click on the Vault badge in the top bar to deposit more Galleons.`
+        );
+        return;
+      }
+
+      // Deduct money from account
+      vaultBalance -= cost;
+      updateVaultDisplay();
+
+      // Show receipt popup detailing money deducted
+      const purchased = activeProduct;
+      closeProductModal();
+      openReceiptModal(purchased, cost, vaultBalance);
     };
 
     // Filter bar event listener
