@@ -49,30 +49,27 @@
       margin: 0 0 16px
     }
 
-    h3 {
-      font-size: 13px;
-      color: var(--mu);
-      font-weight: 600;
-      margin: 18px 0 6px
-    }
-
-    nav button {
-      display: block;
+    .btn-new {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 100%;
-      text-align: left;
-      background: none;
-      border: 0;
-      color: var(--mu);
-      padding: 8px 10px;
-      border-radius: 6px;
+      background: var(--pn);
+      border: 1px solid var(--ln);
+      color: var(--tx);
+      padding: 9px 12px;
+      border-radius: 8px;
       font: inherit;
-      cursor: pointer
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
     }
 
-    nav button.on {
+    .btn-new:hover {
       background: #222b36;
-      color: var(--tx);
-      box-shadow: inset 3px 0 var(--ac)
+      border-color: var(--ac);
+      color: #fff;
     }
 
     main {
@@ -348,32 +345,16 @@
 <body>
   <aside class="l">
     <h1>LocalMind</h1>
-    <nav id="nav"><button data-m="chat" class="on">Chat</button><button data-m="docs">Chat with docs</button><button
-        data-m="research">Deep research</button><button data-m="extract">Extract JSON</button><button
-        data-m="bench">Benchmark</button></nav>
-    <h3>Documents</h3>
-    <div id="files" style="font-size:13px;color:var(--mu)">None indexed</div>
-    <input type="file" id="up" style="width:100%;margin-top:8px;font-size:12px"><button class="go" id="clr"
-      style="margin-top:6px;background:none;color:var(--mu);border:1px solid var(--ln)">Clear documents</button>
-    <h3>Memory</h3>
-    <div style="font-size:12px;color:var(--mu)">Start a message with “remember …” to save a fact.</div>
+    <div style="font-size:12px;color:var(--mu);margin-bottom:16px;line-height:1.5">
+      Local banking AI assistant running fully private and offline.
+    </div>
+    <button id="newChat" class="btn-new">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      New Chat
+    </button>
   </aside>
   <main>
     <div id="log"></div>
-    <div id="extract" class="pane" style="padding:20px 24px">
-      <div class="box"><label>Text</label><textarea id="etext"></textarea><label>Fields (comma separated)</label><input
-          id="efields" style="width:100%" value="name, date, amount"><br><br><button class="go"
-          id="ego">Extract</button>
-        <pre id="eout"></pre>
-      </div>
-    </div>
-    <div id="bench" class="pane" style="padding:20px 24px">
-      <div class="box">
-        <p>Runs 8 requests sharing one long prefix, with the SGLang cache flushed before every request versus kept warm.
-        </p><button class="go" id="bgo">Run benchmark</button>
-        <pre id="bout"></pre>
-      </div>
-    </div>
     <form id="f"><input id="q" placeholder="Ask anything…" autocomplete="off"><button class="go">Send</button></form>
   </main>
   <aside class="r">
@@ -381,13 +362,8 @@
     <div id="mt"></div>
   </aside>
   <script>
-    let mode = "chat", hist = []; const $ = s => document.querySelector(s), log = $("#log");
-    $("#nav").onclick = e => {
-      const m = e.target.dataset.m; if (!m) return; mode = m; hist = []; log.innerHTML = "";
-      [...$("#nav").children].forEach(b => b.classList.toggle("on", b === e.target));
-      log.style.display = ["extract", "bench"].includes(m) ? "none" : ""; $("#extract").classList.toggle("on", m == "extract"); $("#bench").classList.toggle("on", m == "bench");
-      $("#f").style.display = ["extract", "bench"].includes(m) ? "none" : "flex"
-    };
+    let hist = []; const $ = s => document.querySelector(s), log = $("#log");
+    $("#newChat").onclick = () => { hist = []; log.innerHTML = ""; };
     const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
     function inlineMd(s) {
@@ -531,47 +507,22 @@
         }
       };
       try {
-        if (mode == "research") {
-          const grid = document.createElement("div"); grid.className = "ag"; log.insertBefore(grid, out);
-          await sse("/api/research", { question: q }, ev => {
-            if (ev.t == "stage") out.innerHTML = `<em>${ev.v == "plan" ? "Planning…" : "Writing report…"}</em>`;
-            if (ev.t == "plan") ev.questions.forEach((s, i) => { const a = document.createElement("div"); a.className = "a"; a.id = "a" + i; a.textContent = s; grid.append(a) });
-            if (ev.t == "agent") { const a = $("#a" + ev.i); a.className = "a " + ev.state; if (ev.state == "done") a.title = ev.answer, a.textContent += `  ✓ ${ev.score}/10` }
-            tok(ev)
-          });
-        }
-        else {
-          hist.push({ role: "user", content: q });
-          await sse("/api/chat", { messages: hist, docs: mode == "docs" }, ev => {
-            if (ev.t == "sources") ev.sources.forEach((s, i) => { const d = add("src", `[${i + 1}] ${s.src}: ${s.text.slice(0, 160)}…`) });
-            tok(ev)
-          });
-          hist.push({ role: "assistant", content: txt });
-        }
+        hist.push({ role: "user", content: q });
+        await sse("/api/chat", { messages: hist, docs: false }, ev => {
+          tok(ev);
+        });
+        hist.push({ role: "assistant", content: txt });
       } catch (err) {
         out.innerHTML = "<span style='color:var(--wa)'>Could not reach the model. Is SGLang running on port 30000?</span>";
       }
     };
-    $("#ego").onclick = async () => {
-      $("#eout").textContent = "Working…"; const r = await fetch("/api/extract", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: $("#etext").value, fields: $("#efields").value.split(",").map(s => s.trim()).filter(Boolean) })
-      }); $("#eout").textContent = JSON.stringify(await r.json(), null, 2)
-    };
-    $("#bgo").onclick = async () => {
-      $("#bout").textContent = "Running (about a minute)…"; const j = await (await fetch("/api/benchmark", { method: "POST" })).json();
-      $("#bout").textContent = `No cache : ${j.no_cache_s}s\nWith cache: ${j.cache_s}s\nSpeedup   : ${j.speedup}x`
-    };
-    async function files() { const j = await (await fetch("/api/docs")).json(); $("#files").textContent = j.sources.length ? j.sources.join(", ") + ` (${j.chunks} chunks)` : "None indexed" }
-    $("#up").onchange = async e => { const fd = new FormData(); fd.append("file", e.target.files[0]); await fetch("/api/upload", { method: "POST", body: fd }); files() };
-    $("#clr").onclick = async () => { await fetch("/api/docs", { method: "DELETE" }); files() };
     async function met() {
       try {
         const m = await (await fetch("/api/metrics")).json(); const row = (k, v) => `<div class="kv"><span>${k}</span><b>${v ?? "–"}</b></div>`;
         $("#mt").innerHTML = row("Server", m.up ? "online" : "offline") + row("Tokens/s", m.tps) + row("Server gen/s", m.gen_tps) + row("Cache hit", m.cache != null ? (m.cache * 100).toFixed(0) + "%" : null) + row("Running", m.running) + row("Queued", m.queued) + row("Tokens total", m.tokens)
       } catch { }
     }
-    setInterval(met, 1500); met(); files();
+    setInterval(met, 1500); met();
   </script>
 </body>
 
