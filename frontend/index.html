@@ -1572,7 +1572,7 @@
         card.innerHTML = `
           <div class="product-img-slot">
             <img src="/assets/products/${p.sku}.jpg" alt="${p.title}" 
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
+                 onerror="if (this.src.endsWith('.jpg')) { this.src = '/assets/products/' + '${p.sku}' + '.png'; } else if (this.src.endsWith('.png')) { this.src = '/assets/products/' + '${p.sku}' + '.webp'; } else { this.style.display='none'; this.nextElementSibling.style.display='flex'; }" 
                  loading="lazy" />
             <div class="img-placeholder">
               <span class="placeholder-icon">${icon}</span>
@@ -1631,8 +1631,14 @@
       modalPlaceholder.style.display = "none";
       modalImg.src = `/assets/products/${p.sku}.jpg`;
       modalImg.onerror = () => {
-        modalImg.style.display = "none";
-        modalPlaceholder.style.display = "flex";
+        if (modalImg.src.endsWith(".jpg")) {
+          modalImg.src = `/assets/products/${p.sku}.png`;
+        } else if (modalImg.src.endsWith(".png")) {
+          modalImg.src = `/assets/products/${p.sku}.webp`;
+        } else {
+          modalImg.style.display = "none";
+          modalPlaceholder.style.display = "flex";
+        }
       };
 
       // Options
