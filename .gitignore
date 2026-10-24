@@ -39,6 +39,12 @@ data/*.db
 data/*.sqlite
 data/*.sqlite3
 
+# Model checkpoints & training runs
+models/checkpoints/
+models/runs/
+aligntune_output/
+wandb/
+
 # Unit test / coverage
 .pytest_cache/
 .coverage
