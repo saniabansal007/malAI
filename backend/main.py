@@ -32,12 +32,24 @@ live = {"tokens": 0, "tps": 0.0}
 def sse(o):
     return f"data: {json.dumps(o)}\n\n"
 
+def clean_rag_chunk(text: str) -> str:
+    # Strip any line that starts with or contains - SKU: ...
+    text = re.sub(r"^[-*•]?\s*SKU\s*:.*$", "", text, flags=re.MULTILINE | re.IGNORECASE)
+    # Strip Clause headers
+    text = re.sub(r"^###?\s*Clause\s+[A-Z0-9_-]+:\s*", "### ", text, flags=re.MULTILINE | re.IGNORECASE)
+    return text.strip()
+
 def system_prompt():
     return (
         "You are Dobby, the devoted, humble, and strictly grounded magical house-elf assistant at the Enchanted Emporium magic store in the Harry Potter universe. "
-        "You speak in third person with authentic house-elf charm, politeness, and warmth ('Dobby is most pleased to help good wizard/witch!', 'Dobby can explain!'). "
+        "You speak in third person with authentic house-elf charm, loyalty, and warmth ('Dobby is most pleased to help good wizard/witch!', 'Dobby can explain!'). "
         "Help customers discover magical products, compare specs and Galleon (G) prices accurately, answer store policy questions (returns, owl post delivery, warranties, robe embroidery), "
-        "and firmly and politely refuse Dark Arts items or policy violations. Always cite clause tags such as [MAG-...] or policy tags like [RET-...] when applicable."
+        "and firmly and politely refuse Dark Arts items or policy violations.\n\n"
+        "CRITICAL RULES ON TONE & VOCABULARY:\n"
+        "- NEVER use the word 'SKU' under any circumstances! Do not say 'the SKU is', 'SKU:', or 'catalog SKU'.\n"
+        "- Do NOT write internal codes like MAG-ROB-GRY-001, [MAG-WAND-001], [RET-01], or bracketed reference numbers.\n"
+        "- Always speak in a warm, natural, and conversational house-elf manner. Refer to items by their actual names (e.g. 'Gryffindor House Robes', 'Ollivanders Wand', or 'our 30-day return policy').\n"
+        "- Keep prices clear in Galleons (e.g. '25 Galleons' or '7.00 G')."
     )
 
 def body(messages, **kw):
@@ -93,8 +105,8 @@ async def chat(req: ChatReq):
         if last_user_msg and (req.docs or True):
             hits = library.search(last_user_msg, k=4)
             if hits:
-                rag_context = "\n\n[ENCHANTED EMPORIUM VERIFIED CATALOG & STORE POLICIES]:\n" + "\n\n".join(
-                    f"Clause/Item: {h['src']}\n{h['text']}" for h in hits
+                rag_context = "\n\n[STORE KNOWLEDGE BASE (INTERNAL REFERENCE - NEVER USE THE WORD SKU)]:\n" + "\n\n".join(
+                    clean_rag_chunk(h['text']) for h in hits
                 )
 
         sys_content = system_prompt()

@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <!-- Background & lighting gradients -->
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.35"/>
+      <stop offset="70%" stop-color="#312e81" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="1"/>
+    </radialGradient>
+    
+    <!-- Elf skin tones -->
+    <linearGradient id="skinBase" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="40%" stop-color="#e2c8a2"/>
+      <stop offset="100%" stop-color="#c9a77b"/>
+    </linearGradient>
+    
+    <linearGradient id="innerEar" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#f4b5a4"/>
+      <stop offset="100%" stop-color="#d68f7f"/>
+    </linearGradient>
+
+    <!-- Tennis-ball green eyes -->
+    <radialGradient id="greenEye" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#86efac"/>
+      <stop offset="40%" stop-color="#22c55e"/>
+      <stop offset="85%" stop-color="#15803d"/>
+      <stop offset="100%" stop-color="#14532d"/>
+    </radialGradient>
+    
+    <!-- Pillowcase fabric -->
+    <linearGradient id="pillowcase" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f1ede4"/>
+      <stop offset="60%" stop-color="#ded4c3"/>
+      <stop offset="100%" stop-color="#b8ab96"/>
+    </linearGradient>
+    
+    <!-- Golden pin -->
+    <radialGradient id="goldPin" cx="35%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="40%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background disk -->
+  <circle cx="100" cy="100" r="96" fill="url(#bgGlow)" stroke="#f59e0b" stroke-width="4"/>
+
+  <!-- Left Ear (Long pointed bat ear) -->
+  <path d="M 68 88 C 42 78, 10 70, 4 94 C 0 114, 30 120, 68 106 Z" fill="url(#skinBase)" stroke="#b08b5f" stroke-width="2"/>
+  <path d="M 62 90 C 42 84, 18 80, 16 95 C 14 108, 36 112, 62 102 Z" fill="url(#innerEar)" opacity="0.85"/>
+
+  <!-- Right Ear (Long pointed bat ear) -->
+  <path d="M 132 88 C 158 78, 190 70, 196 94 C 200 114, 170 120, 132 106 Z" fill="url(#skinBase)" stroke="#b08b5f" stroke-width="2"/>
+  <path d="M 138 90 C 158 84, 182 80, 184 95 C 186 108, 164 112, 138 102 Z" fill="url(#innerEar)" opacity="0.85"/>
+
+  <!-- Draped Pillowcase Tunic (Shoulders & Body) -->
+  <path d="M 52 148 C 52 135, 75 130, 100 130 C 125 130, 148 135, 148 148 L 158 196 C 130 200, 70 200, 42 196 Z" fill="url(#pillowcase)" stroke="#8c7e6b" stroke-width="2"/>
+  <path d="M 80 132 C 86 148, 92 165, 88 195" stroke="#b3a591" stroke-width="2" fill="none"/>
+  <path d="M 120 132 C 114 148, 108 165, 112 195" stroke="#b3a591" stroke-width="2" fill="none"/>
+  
+  <!-- Pillowcase Knotted Pin / Hogwarts Crest Brooch -->
+  <circle cx="68" cy="144" r="7" fill="url(#goldPin)" stroke="#78350f" stroke-width="1.5"/>
+  <circle cx="68" cy="144" r="3" fill="#ffffff" opacity="0.7"/>
+
+  <!-- Dobby's Head -->
+  <ellipse cx="100" cy="94" rx="42" ry="46" fill="url(#skinBase)" stroke="#b08b5f" stroke-width="2"/>
+  
+  <!-- Head wrinkles & characteristic brow lines -->
+  <path d="M 84 62 C 95 58, 105 58, 116 62" stroke="#b8936b" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M 88 68 C 96 65, 104 65, 112 68" stroke="#b8936b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M 94 73 C 98 72, 102 72, 106 73" stroke="#b8936b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Left Eyebrow -->
+  <path d="M 72 75 C 78 72, 86 73, 90 77" stroke="#8c6c49" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Right Eyebrow -->
+  <path d="M 128 75 C 122 72, 114 73, 110 77" stroke="#8c6c49" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+  <!-- Left Eye (Big Tennis Ball Eye) -->
+  <ellipse cx="80" cy="88" rx="14" ry="16" fill="#fefce8" stroke="#4a3728" stroke-width="2"/>
+  <circle cx="80" cy="88" r="11" fill="url(#greenEye)"/>
+  <circle cx="80" cy="88" r="5.5" fill="#09140c"/>
+  <!-- Specular highlights -->
+  <circle cx="76" cy="83" r="3.5" fill="#ffffff"/>
+  <circle cx="84" cy="92" r="1.5" fill="#ffffff" opacity="0.9"/>
+
+  <!-- Right Eye (Big Tennis Ball Eye) -->
+  <ellipse cx="120" cy="88" rx="14" ry="16" fill="#fefce8" stroke="#4a3728" stroke-width="2"/>
+  <circle cx="120" cy="88" r="11" fill="url(#greenEye)"/>
+  <circle cx="120" cy="88" r="5.5" fill="#09140c"/>
+  <!-- Specular highlights -->
+  <circle cx="116" cy="83" r="3.5" fill="#ffffff"/>
+  <circle cx="124" cy="92" r="1.5" fill="#ffffff" opacity="0.9"/>
+
+  <!-- Pointed Curved Nose -->
+  <path d="M 99 88 C 97 98, 92 108, 97 112 C 100 114, 104 113, 104 109 C 103 103, 101 95, 101 88" fill="#d9b68c" stroke="#9a744c" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Nostril shadow -->
+  <ellipse cx="96" cy="111" rx="2" ry="1.2" fill="#785633"/>
+  <ellipse cx="102" cy="111" rx="2" ry="1.2" fill="#785633"/>
+
+  <!-- Kind, Warm House-Elf Smile -->
+  <path d="M 85 120 C 93 127, 107 127, 115 120" stroke="#78350f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Smile dimples -->
+  <path d="M 83 118 C 84 120, 84 122, 85 123" stroke="#b08b5f" stroke-width="1.5" fill="none"/>
+  <path d="M 117 118 C 116 120, 116 122, 115 123" stroke="#b08b5f" stroke-width="1.5" fill="none"/>
+
+  <!-- Cute Rosy Cheeks -->
+  <ellipse cx="71" cy="104" rx="7" ry="4" fill="#f43f5e" opacity="0.22"/>
+  <ellipse cx="129" cy="104" rx="7" ry="4" fill="#f43f5e" opacity="0.22"/>
+
+  <!-- Magical Wand Sparkles near Dobby -->
+  <g fill="#fbbf24">
+    <path d="M 160 45 Q 160 52 167 52 Q 160 52 160 59 Q 160 52 153 52 Q 160 52 160 45 Z" opacity="0.9"/>
+    <path d="M 38 48 Q 38 53 43 53 Q 38 53 38 58 Q 38 53 33 53 Q 38 53 38 48 Z" opacity="0.8"/>
+    <circle cx="168" cy="68" r="2" fill="#fef08a"/>
+    <circle cx="30" cy="72" r="1.5" fill="#fef08a"/>
+  </g>
+</svg>
