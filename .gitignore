@@ -43,6 +43,10 @@ data/*.sqlite3
 models/checkpoints/
 models/runs/
 models/banking_model_merged/
+models/shopping_model_merged/
+*.safetensors
+*.bin
+*.pt
 aligntune_output/
 wandb/
 
@@ -59,6 +63,3 @@ htmlcov/
 *~
 .DS_Store
 Thumbs.db
-
-plan.md
-README.md

@@ -12,8 +12,8 @@ from peft import PeftModel
 
 
 def merge_lora_adapter(
-    adapter_dir: str = "models/banking_lora_adapter",
-    output_dir: str = "models/banking_model_merged",
+    adapter_dir: str = "models/shopping_lora_adapter",
+    output_dir: str = "models/shopping_model_merged",
 ):
     adapter_path = Path(adapter_dir)
     dst_path = Path(output_dir)

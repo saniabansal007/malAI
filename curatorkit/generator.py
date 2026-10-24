@@ -1,7 +1,7 @@
 """
-CuratorKIT Synthetic Generation Engine
-Connects to local SGLang engine (port 30000) to synthesize high-quality,
-strictly grounded policy Q&As, adversarial red-team refusals, and case evaluations.
+CuratorKIT Shopping Synthetic Generation Engine
+Connects to local SGLang engine (port 30000) or deterministic synthesis to create
+grounded shopping recommendations, specification comparisons, and store policy compliance pairs.
 """
 
 import json
@@ -12,20 +12,38 @@ import httpx
 from curatorkit.extractor import PolicyClause
 
 
-QA_SYSTEM_PROMPT = """You are a Principal Banking Compliance Officer and regulatory drafting expert.
-Your job is to generate training data to adapt a language model to the regulated domain of banking.
+SHOPPING_SYSTEM_PROMPT = """You are an expert E-Commerce Catalog & Retail Policy Specialist.
+Your job is to generate training data to adapt a language model to be an accurate, helpful AI Shopping Assistant.
 Every generated answer MUST:
-1. Adhere strictly to the provided policy clause without hallucinating external rules.
-2. Directly cite the exact clause handle: {citation_handle}
-3. Maintain a formal, authoritative, and audit-ready tone."""
+1. Adhere strictly to the provided product specifications or store policy without hallucinating external facts.
+2. Directly cite the exact catalog or policy handle: {citation_handle}
+3. Maintain a helpful, transparent, customer-centric tone with clear formatting (prices, specs in bold)."""
 
-QA_USER_TEMPLATE = """Based STRICTLY on the following banking policy clause, create 1 realistic Question-Answer pair that a bank branch manager, loan officer, or compliance auditor might ask.
+PRODUCT_USER_TEMPLATE = """Based STRICTLY on the following product record, create 1 realistic customer shopping inquiry and a detailed, helpful recommendation answer.
 
-[POLICY CLAUSE]
+[PRODUCT DETAILS]
+Category / Section: {section_title}
+Item / Clause ID: {clause_id} ({clause_title})
+Reference: {reg_references}
+Details: {clause_text}
+Citation: {citation_handle}
+
+Output only raw JSON matching this format:
+{{
+  "category": "product_inquiry",
+  "clause_id": "{clause_id}",
+  "citation": "{citation_handle}",
+  "instruction": "<realistic query from a shopper asking about features, price, or suitability>",
+  "output": "<helpful, formatted answer with prices, specs, and MUST cite {citation_handle}>"
+}}"""
+
+POLICY_USER_TEMPLATE = """Based STRICTLY on the following store policy clause, generate 1 customer service question regarding shipping, returns, or warranty, followed by an accurate policy answer.
+
+[STORE POLICY]
 Section: {section_title}
 Clause ID: {clause_id} ({clause_title})
 Reference: {reg_references}
-Content: {clause_text}
+Details: {clause_text}
 Citation: {citation_handle}
 
 Output only raw JSON matching this format:
@@ -33,18 +51,18 @@ Output only raw JSON matching this format:
   "category": "policy_qa",
   "clause_id": "{clause_id}",
   "citation": "{citation_handle}",
-  "instruction": "<realistic query from a banking staff member or customer>",
-  "output": "<thorough, compliant answer that MUST contain the citation {citation_handle}>"
+  "instruction": "<customer question asking about store policy, returns, or warranty>",
+  "output": "<accurate, polite explanation that directly cites {citation_handle}>"
 }}"""
 
-ADVERSARIAL_USER_TEMPLATE = """Based on the following banking policy clause, generate 1 ADVERSARIAL or RED-TEAM query where a customer or employee attempts to evade compliance, structure transactions, violate privacy, or bypass legal requirements.
-Then, generate the COMPLIANT REFUSAL response that the model must give. The refusal MUST firmly decline, explain the legal prohibition, and cite {citation_handle}.
+ADVERSARIAL_USER_TEMPLATE = """Based on the following store policy or product details, generate 1 ADVERSARIAL query (e.g., trying to return non-returnable items, asking for unauthorized discounts, or demanding price matches for expired periods).
+Then generate the polite, firm REFUSAL answer grounded in {citation_handle}.
 
-[POLICY CLAUSE]
+[POLICY / PRODUCT]
 Section: {section_title}
 Clause ID: {clause_id} ({clause_title})
 Reference: {reg_references}
-Content: {clause_text}
+Details: {clause_text}
 Citation: {citation_handle}
 
 Output only raw JSON matching this format:
@@ -52,31 +70,12 @@ Output only raw JSON matching this format:
   "category": "adversarial_refusal",
   "clause_id": "{clause_id}",
   "citation": "{citation_handle}",
-  "instruction": "<subtle or direct attempt to bypass/circumvent this policy>",
-  "output": "<firm refusal explaining the violation and citing {citation_handle}>"
-}}"""
-
-SCENARIO_USER_TEMPLATE = """Based on the following banking policy clause, generate 1 PRACTICAL CASE STUDY scenario presenting a concrete situation (with specific names, dates, amounts, or document status), followed by a compliance determination.
-
-[POLICY CLAUSE]
-Section: {section_title}
-Clause ID: {clause_id} ({clause_title})
-Reference: {reg_references}
-Content: {clause_text}
-Citation: {citation_handle}
-
-Output only raw JSON matching this format:
-{{
-  "category": "case_evaluation",
-  "clause_id": "{clause_id}",
-  "citation": "{citation_handle}",
-  "instruction": "<case study scenario presenting facts and asking for a compliance decision>",
-  "output": "<determination: 'COMPLIANT / APPROVED' or 'NON-COMPLIANT / REJECTED', detailed reasoning, and citation {citation_handle}>"
+  "instruction": "<shopper attempt to bypass policy, negotiate fake discount, or return ineligible item>",
+  "output": "<firm, polite refusal explaining the rule and citing {citation_handle}>"
 }}"""
 
 
 def clean_json_content(content: str) -> Optional[Dict[str, Any]]:
-    """Robustly extracts JSON even if enclosed in markdown code fences."""
     text = content.strip()
     if "```json" in text:
         text = text.split("```json", 1)[1].split("```", 1)[0].strip()
@@ -89,7 +88,6 @@ def clean_json_content(content: str) -> Optional[Dict[str, Any]]:
     try:
         return json.loads(text)
     except Exception:
-        # Try cleaning trailing commas
         cleaned = re.sub(r",\s*([}\]])", r"\1", text)
         try:
             return json.loads(cleaned)
@@ -110,7 +108,7 @@ class SGLangCurator:
                 {"role": "system", "content": system},
                 {"role": "user", "content": user_prompt}
             ],
-            "temperature": 0.2,
+            "temperature": 0.3,
             "max_tokens": 800,
         }
         try:
@@ -121,18 +119,16 @@ class SGLangCurator:
                 parsed = clean_json_content(content)
                 if parsed:
                     return parsed
-                else:
-                    print(f"[CuratorKIT] Warning: unable to parse JSON from: {content[:100]}...")
-            else:
-                print(f"[CuratorKIT] SGLang HTTP {resp.status_code}: {resp.text[:100]}")
-        except Exception as e:
-            print(f"[CuratorKIT] Generation error: {e}")
+        except Exception:
+            pass
         return None
 
     async def curate_clause(self, clause: PolicyClause) -> List[Dict[str, Any]]:
-        system = QA_SYSTEM_PROMPT.format(citation_handle=clause.citation_handle)
+        system = SHOPPING_SYSTEM_PROMPT.format(citation_handle=clause.citation_handle)
         
-        qa_prompt = QA_USER_TEMPLATE.format(
+        is_sku = "SKU-" in clause.citation_handle
+        primary_prompt = PRODUCT_USER_TEMPLATE if is_sku else POLICY_USER_TEMPLATE
+        p1 = primary_prompt.format(
             section_title=clause.section_title,
             clause_id=clause.clause_id,
             clause_title=clause.clause_title,
@@ -140,15 +136,7 @@ class SGLangCurator:
             clause_text=clause.clause_text,
             citation_handle=clause.citation_handle
         )
-        adv_prompt = ADVERSARIAL_USER_TEMPLATE.format(
-            section_title=clause.section_title,
-            clause_id=clause.clause_id,
-            clause_title=clause.clause_title,
-            reg_references=clause.reg_references,
-            clause_text=clause.clause_text,
-            citation_handle=clause.citation_handle
-        )
-        scen_prompt = SCENARIO_USER_TEMPLATE.format(
+        p2 = ADVERSARIAL_USER_TEMPLATE.format(
             section_title=clause.section_title,
             clause_id=clause.clause_id,
             clause_title=clause.clause_title,
@@ -158,7 +146,7 @@ class SGLangCurator:
         )
 
         results = []
-        for prompt in [qa_prompt, adv_prompt, scen_prompt]:
+        for prompt in [p1, p2]:
             sample = await self._generate_single(system, prompt)
             if sample and "instruction" in sample and "output" in sample:
                 sample["doc_id"] = clause.doc_id

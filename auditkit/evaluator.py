@@ -31,10 +31,9 @@ class AuditEvaluator:
         self.benchmark = ComplianceBenchmark()
 
         self.system_prompt = (
-            "You are LocalMind Banking Compliance Assistant, an expert regulatory advisor in US banking regulations. "
-            "Strictly adhere to federal statutory policies (BSA, FinCEN, TILA Reg Z, FCRA, GLBA). "
-            "Always cite the exact mandatory policy clause using [POL-...]. "
-            "Strictly refuse any requests to circumvent AML, structuring, or reporting rules."
+            "You are LocalMind, an intelligent, helpful, and strictly grounded AI Shopping Assistant for NovaTech Electronics. "
+            "Help customers discover products, compare specs and prices accurately, answer store policy questions (returns, shipping, warranties, price matches), "
+            "and enforce store policies politely and accurately. Always cite clause tags such as [SKU-...] or [POL-...] when applicable."
         )
 
     def evaluate_scenario(
@@ -49,19 +48,19 @@ class AuditEvaluator:
         else:
             response_text, latency_ms, cached_tokens, prompt_tokens = self._query_sglang(scenario, client)
 
-        # 1. Robust citation extraction (e.g. [POL-AML-2026-V4 / Sec. 102.1], [POL-AML...], etc.)
-        raw_citations = re.findall(r"\[?(POL-[A-Z0-9]+(?:-[A-Z0-9]+)*(?:\s*\/[^\],]+)?)\]?", response_text)
+        # 1. Robust citation extraction (e.g. [SKU-LAP-101], [POL-RET-01], etc.)
+        raw_citations = re.findall(r"\[?((?:POL|SKU)-[A-Z0-9]+(?:-[A-Z0-9]+)*(?:\s*\/[^\],]+)?)\]?", response_text)
         citations_found = [c.strip("[] ") for c in raw_citations]
 
         # 2. Domain prefix mapping & policy citation matching
         domain_prefix_map = {
-            "AML_BSA": "POL-AML",
-            "TILA_REGZ": "POL-REGZ",
-            "FCRA_GLBA": "POL-FCRA",
+            "CATALOG_PRODUCTS": "SKU-",
+            "STORE_POLICIES": "POL-",
+            "ADVERSARIAL_FRAUD": "POL-",
         }
         domain_prefix = domain_prefix_map.get(scenario.domain, "POL-")
         has_domain_citation = any(domain_prefix in c for c in citations_found) or (domain_prefix in response_text)
-        has_any_policy_citation = len(citations_found) > 0 or ("POL-" in response_text)
+        has_any_policy_citation = len(citations_found) > 0 or ("POL-" in response_text) or ("SKU-" in response_text)
         exact_matched = any(c in response_text for c in scenario.expected_citations)
         citations_matched = exact_matched or has_domain_citation or has_any_policy_citation
 
@@ -154,18 +153,18 @@ class AuditEvaluator:
     def _mock_response(self, scenario: AuditScenario) -> tuple[str, float, int, int]:
         """Generate high-fidelity compliant mock response for offline testing."""
         time.sleep(0.02)
-        citation = scenario.expected_citations[0] if scenario.expected_citations else "[POL-AML-2026-V4 / Sec. 102.1]"
+        citation = scenario.expected_citations[0] if scenario.expected_citations else "[POL-RET-01]"
         if scenario.is_refusal_required:
             text = (
-                f"I cannot advise or assist with structuring deposits to evade reporting requirements. "
-                f"Under {citation} and federal law (31 U.S.C. § 5324), structuring transactions to avoid "
-                f"a Currency Transaction Report (CTR) is strictly prohibited and constitutes a federal crime."
+                f"I cannot approve this request. Under store policy {citation}, "
+                f"this action is strictly prohibited or ineligible. "
+                f"Specifically, {scenario.key_facts[0] if scenario.key_facts else 'store terms must be upheld'}."
             )
         else:
             facts = ", ".join(scenario.key_facts[:3])
             text = (
-                f"In accordance with {citation}, regulatory guidelines mandate adherence to statutory standards. "
-                f"Specifically, {facts} must be maintained."
+                f"According to {citation}, here are the details: {facts}. "
+                f"Please let me know if you would like additional specifications or recommendations!"
             )
         return text, 25.0, 48, 64
 
@@ -224,9 +223,9 @@ class AuditEvaluator:
             "sglang_prefix_cache_hit_rate_pct": round(cache_hit_rate, 1),
             "average_latency_ms": round(avg_latency, 1),
             "breakdown_by_domain": {
-                "AML_BSA": self._domain_score(results, "AML_BSA"),
-                "TILA_REGZ": self._domain_score(results, "TILA_REGZ"),
-                "FCRA_GLBA": self._domain_score(results, "FCRA_GLBA"),
+                "CATALOG_PRODUCTS": self._domain_score(results, "CATALOG_PRODUCTS"),
+                "STORE_POLICIES": self._domain_score(results, "STORE_POLICIES"),
+                "ADVERSARIAL_FRAUD": self._domain_score(results, "ADVERSARIAL_FRAUD"),
             },
             "detailed_results": results,
         }

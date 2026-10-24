@@ -7,7 +7,16 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 SG = os.getenv("SGLANG_URL", "http://127.0.0.1:30000")
-MODEL = os.getenv("MODEL", "models/banking_model_merged")
+MODEL = os.getenv(
+    "MODEL",
+    "models/shopping_model_merged"
+    if Path("models/shopping_model_merged").exists()
+    else (
+        "models/banking_model_merged"
+        if Path("models/banking_model_merged").exists()
+        else "Qwen/Qwen2.5-1.5B-Instruct"
+    )
+)
 
 Path("data").mkdir(exist_ok=True)
 app = FastAPI(title="LocalMind")
@@ -18,7 +27,11 @@ def sse(o):
     return f"data: {json.dumps(o)}\n\n"
 
 def system_prompt():
-    return "You are LocalMind, a private offline banking compliance AI assistant."
+    return (
+        "You are LocalMind, an intelligent, helpful, and strictly grounded AI Shopping Assistant for NovaTech Electronics. "
+        "Help customers discover products, compare specs and prices accurately, answer store policy questions (returns, shipping, warranties, price matches), "
+        "and enforce store policies politely and accurately. Always cite clause tags such as [SKU-...] or [POL-...] when applicable."
+    )
 
 def body(messages, **kw):
     return {

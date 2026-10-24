@@ -56,9 +56,46 @@ async def chat(req: Request):
     if schema:
         texts = [json.dumps(fake(schema))]
     else:
-        think = (b.get("chat_template_kwargs") or {}).get("enable_thinking")
-        texts = [("<think>Let me work through this.</think>\n\n" if think else "") +
-                 "This is a **mock** answer from the fake SGLang server, citing [1]."] * b.get("n", 1)
+        user_msg = next((m.get("content", "") for m in reversed(msgs) if m.get("role") == "user"), "")
+        u_lower = user_msg.lower()
+        if "laptop" in u_lower:
+            reply = (
+                "For a lightweight and portable laptop under $1,000, I recommend the **NovaBook Slim 14** [SKU-LAP-103] at **$899.99**.\n\n"
+                "- **Processor:** AMD Ryzen 7 8840HS\n"
+                "- **Memory & Storage:** 16GB LPDDR5X, 512GB Gen4 NVMe SSD\n"
+                "- **Display:** 14-inch 2.8K OLED (120Hz, 100% DCI-P3)\n"
+                "- **Battery Life:** Up to 18 hours\n"
+                "- **Weight:** 1.28 kg (2.82 lbs)\n\n"
+                "It is in stock and qualifies for **Free Standard Ground Shipping** [POL-SHIP-01]!"
+            )
+        elif "return" in u_lower:
+            reply = (
+                "Here is an overview of our **Store Return Policy** [POL-RET-01]:\n\n"
+                "1. **30-Day Window:** Unopened items in original factory packaging qualify for a 100% refund [POL-RET-01].\n"
+                "2. **Open-Box Restocking Fee:** Opened items in like-new condition are subject to a **15% restocking fee** [POL-RET-02].\n"
+                "3. **Hygiene Exclusion:** Opened in-ear headphones (such as EchoPods) cannot be returned due to sanitary hygiene standards [POL-RET-03].\n"
+                "4. **Defective on Arrival (DOA):** Claims filed within 72 hours receive immediate replacement with prepaid shipping [POL-RET-04]."
+            )
+        elif "compare" in u_lower or "echopods" in u_lower:
+            reply = (
+                "Here is a side-by-side comparison between **EchoPods Pro ANC** [SKU-AUD-201] and **EchoBuds Sport** [SKU-AUD-203]:\n\n"
+                "| Specification | EchoPods Pro ANC [SKU-AUD-201] | EchoBuds Sport [SKU-AUD-203] |\n"
+                "| :--- | :--- | :--- |\n"
+                "| **Price** | $249.99 | $89.99 |\n"
+                "| **Noise Cancellation** | Hybrid ANC (up to 45dB) | Passive Noise Isolation |\n"
+                "| **Battery Life** | 8h earbuds / 30h with case | 9h earbuds / 32h with case |\n"
+                "| **Water Resistance** | IPX5 (Sweat/Splash) | IP68 (Waterproof & Dustproof) |\n"
+                "| **Drivers** | 11mm Beryllium drivers | 10mm Graphene drivers |\n\n"
+                "Both products come with a **1-Year Manufacturer Warranty** [POL-WAR-01]."
+            )
+        else:
+            reply = (
+                "👋 Hello! I am your **NovaTech AI Shopping Assistant**.\n\n"
+                "I can help you explore our electronics catalog [SKU-LAP-101], check product specifications, "
+                "or explain store policies including **Free Ground Shipping over $50** [POL-SHIP-01], **30-Day Returns** [POL-RET-01], "
+                "and **14-Day Price Match Guarantees** [POL-PRICE-01]."
+            )
+        texts = [("<think>Thinking...</think>\n\n" if think else "") + reply] * b.get("n", 1)
     if not b.get("stream"):
         return JSONResponse({"choices": [{"index": i, "message": {"role": "assistant", "content": t}} for i, t in enumerate(texts)],
                              "usage": usage})

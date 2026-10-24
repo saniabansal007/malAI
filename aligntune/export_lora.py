@@ -55,27 +55,26 @@ def export_lora_adapter(
 
     # Generate metadata model card for Stage 3 AuditKIT & SGLang
     model_card = {
-        "model_name": "LocalMind Banking Compliance Assistant",
+        "model_name": "LocalMind AI Shopping Assistant",
         "base_model": config.model_id,
         "adapter_type": "LoRA (4-bit QLoRA)",
         "r": config.lora_r,
         "alpha": config.lora_alpha,
         "target_modules": config.target_modules,
-        "domain": "Regulated Banking Compliance (BSA, AML, TILA, FCRA, GLBA)",
+        "domain": "E-Commerce Electronics Catalog & Store Policies (Returns, Warranties, Shipping, Price Match)",
         "citation_handles": [
-            "POL-AML-2026-V4",
-            "POL-REGZ-2026-V2",
-            "POL-FCRA-2026-V3",
+            "SKU-LAP-101", "SKU-AUD-201", "SKU-WEAR-301",
+            "POL-RET-01", "POL-WAR-01", "POL-SHIP-01", "POL-PRICE-01"
         ],
         "training_stages": {
-            "stage_1": "CuratorKIT SGLang Synthetic Curation (63 Verified Grounded Samples)",
+            "stage_1": "CuratorKIT E-Commerce Curation (57 Verified Grounded Samples)",
             "stage_2_sft": "Supervised Fine-Tuning with ChatML Prompt Formatting",
-            "stage_2_dpo": "Direct Preference Optimization against Structuring Evasion & Missing Citations",
+            "stage_2_dpo": "Direct Preference Optimization against Hallucinations, Fake Coupons & Hygiene Returns",
         },
-        "sglang_serving_argument": f"--lora-paths banking_adapter={dst.resolve()}",
+        "sglang_serving_argument": f"--lora-paths shopping_adapter={dst.resolve()}",
     }
 
-    with open(dst / "banking_model_card.json", "w", encoding="utf-8") as f:
+    with open(dst / "shopping_model_card.json", "w", encoding="utf-8") as f:
         json.dump(model_card, f, indent=2)
 
     print(f"[AlignTune Export] Export complete! Adapter ready at: {dst.resolve()}")

@@ -1,7 +1,8 @@
 import os
 import sys
 import json
-import pytest
+import unittest
+import tempfile
 from pathlib import Path
 
 # Ensure localmind root directory is on sys.path
@@ -9,91 +10,95 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 from curatorkit.extractor import PolicyExtractor, PolicyClause
-from curatorkit.verifier import PolicyVerifier, CuratedSample
+from curatorkit.verifier import PolicyVerifier
 from curatorkit.export import DatasetExporter
-from curatorkit.generator import clean_json_content, build_generation_payload
+from curatorkit.generator import clean_json_content
 
 
-def test_policy_extractor_finds_corpus():
-    extractor = PolicyExtractor()
-    clauses = extractor.extract_all()
-    assert len(clauses) > 0, "PolicyExtractor should find clauses in curatorkit/corpus"
-    for c in clauses:
-        assert isinstance(c, PolicyClause)
-        assert c.citation_handle.startswith("[POL-")
-        assert len(c.text.strip()) > 0
-        assert len(c.keywords) > 0
+class TestCuratorKit(unittest.TestCase):
+
+    def test_policy_extractor_finds_shopping_corpus(self):
+        extractor = PolicyExtractor()
+        clauses = extractor.extract_all()
+        self.assertGreater(len(clauses), 0, "PolicyExtractor should find catalog items and store policies")
+        has_sku = False
+        has_pol = False
+        for c in clauses:
+            self.assertIsInstance(c, PolicyClause)
+            if c.citation_handle.startswith("[SKU-"):
+                has_sku = True
+            if c.citation_handle.startswith("[POL-"):
+                has_pol = True
+            self.assertGreater(len(c.clause_text.strip()), 0)
+        self.assertTrue(has_sku, "Extractor should find product SKU clauses")
+        self.assertTrue(has_pol, "Extractor should find store policy clauses")
+
+    def test_clean_json_content(self):
+        raw_markdown = '```json\n{"prompt": "test product", "answer": "test specs"}\n```'
+        data = clean_json_content(raw_markdown)
+        self.assertEqual(data["prompt"], "test product")
+        self.assertEqual(data["answer"], "test specs")
+
+    def test_policy_verifier_product_qa(self):
+        verifier = PolicyVerifier()
+        valid_sample = {
+            "category": "product_inquiry",
+            "citation": "[SKU-LAP-101]",
+            "clause_id": "SKU-LAP-101",
+            "instruction": "What are the specs and price of NovaBook Pro 16?",
+            "output": "According to [SKU-LAP-101], the NovaBook Pro 16 features an M4 Pro chip and 32GB RAM for $2,499.99."
+        }
+        valid, reason = verifier.verify_sample(valid_sample)
+        self.assertTrue(valid)
+
+        # Invalid sample (missing citation)
+        invalid_sample = {
+            "category": "product_inquiry",
+            "citation": "[SKU-LAP-101]",
+            "clause_id": "SKU-LAP-101",
+            "instruction": "What are the specs and price of NovaBook Pro 16?",
+            "output": "The NovaBook Pro 16 features an M4 Pro chip and 32GB RAM for $2,499.99 with no citation."
+        }
+        valid, reason = verifier.verify_sample(invalid_sample)
+        self.assertFalse(valid)
+
+    def test_dpo_pair_creation(self):
+        verifier = PolicyVerifier()
+        verified_samples = [{
+            "category": "adversarial_refusal",
+            "citation": "[POL-RET-03]",
+            "clause_id": "POL-RET-03",
+            "instruction": "Can I return opened in-ear earbuds for a cash refund?",
+            "output": "Under store policy [POL-RET-03], opened in-ear audio products cannot be returned due to sanitary hygiene regulations."
+        }]
+        dpo_pairs = verifier.create_dpo_pairs(verified_samples)
+        self.assertEqual(len(dpo_pairs), 1)
+        self.assertEqual(dpo_pairs[0]["prompt"], verified_samples[0]["instruction"])
+        self.assertEqual(dpo_pairs[0]["chosen"], verified_samples[0]["output"])
+        self.assertIn("SPECIAL50", dpo_pairs[0]["rejected"])
+
+    def test_dataset_exporter(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            exporter = DatasetExporter(output_dir=str(tmp_path))
+            sample = {
+                "category": "product_inquiry",
+                "citation": "[SKU-LAP-101]",
+                "clause_id": "SKU-LAP-101",
+                "instruction": "What is the price of NovaBook Pro?",
+                "output": "Under [SKU-LAP-101], NovaBook Pro 16 is $2,499.99."
+            }
+            dpo_pair = {
+                "prompt": sample["instruction"],
+                "chosen": sample["output"],
+                "rejected": "It costs $19.99."
+            }
+            summary = exporter.export([sample], [dpo_pair], val_ratio=0.0)
+            self.assertEqual(summary["total_verified_samples"], 1)
+            self.assertTrue((tmp_path / "sft_train.jsonl").exists())
+            self.assertTrue((tmp_path / "dpo_pairs.jsonl").exists())
+            self.assertTrue((tmp_path / "curation_summary.json").exists())
 
 
-def test_clean_json_content():
-    raw_markdown = '```json\n{"prompt": "test question", "answer": "test answer"}\n```'
-    cleaned = clean_json_content(raw_markdown)
-    data = json.loads(cleaned)
-    assert data["prompt"] == "test question"
-    assert data["answer"] == "test answer"
-
-
-def test_policy_verifier_qa():
-    verifier = PolicyVerifier()
-    clause = PolicyClause(
-        doc_id="POL-AML-TEST",
-        section_number="Sec. 1.1",
-        title="Test Clause",
-        citation_handle="[POL-AML-TEST / Sec. 1.1]",
-        text="A CTR must be filed within 15 days.",
-        keywords=["CTR", "filing"]
-    )
-
-    valid_response = {
-        "prompt": "When should CTR be filed?",
-        "answer": "According to [POL-AML-TEST / Sec. 1.1], a CTR must be filed within 15 days."
-    }
-    sample = verifier.verify_sample("policy_qa", valid_response, clause)
-    assert sample is not None
-    assert sample.category == "policy_qa"
-    assert sample.citation_handle == clause.citation_handle
-
-    # Test invalid response (missing citation)
-    invalid_response = {
-        "prompt": "When should CTR be filed?",
-        "answer": "A CTR must be filed within 15 days without citation."
-    }
-    invalid_sample = verifier.verify_sample("policy_qa", invalid_response, clause)
-    assert invalid_sample is None
-
-
-def test_dpo_pair_generation():
-    verifier = PolicyVerifier()
-    sample = CuratedSample(
-        sample_id="test-001",
-        category="policy_qa",
-        clause_id="POL-TEST / Sec. 1",
-        citation_handle="[POL-TEST / Sec. 1]",
-        prompt="What is the rule?",
-        chosen_response="Under [POL-TEST / Sec. 1], all transactions over $10,000 must be reported.",
-        rejected_response="You do not need to report anything.",
-        system_prompt="You are a compliance assistant."
-    )
-    pair = verifier.build_dpo_pair(sample)
-    assert pair["prompt"] == sample.prompt
-    assert pair["chosen"] == sample.chosen_response
-    assert pair["rejected"] == sample.rejected_response
-
-
-def test_dataset_exporter(tmp_path):
-    exporter = DatasetExporter(output_dir=str(tmp_path))
-    sample = CuratedSample(
-        sample_id="test-001",
-        category="policy_qa",
-        clause_id="POL-TEST / Sec. 1",
-        citation_handle="[POL-TEST / Sec. 1]",
-        prompt="What is the rule?",
-        chosen_response="Under [POL-TEST / Sec. 1], report transactions over $10,000.",
-        rejected_response="No reporting is needed.",
-        system_prompt="You are a compliance assistant."
-    )
-    summary = exporter.export([sample], val_ratio=0.0)
-    assert summary["total_verified_samples"] == 1
-    assert os.path.exists(tmp_path / "sft_train.jsonl")
-    assert os.path.exists(tmp_path / "dpo_pairs.jsonl")
-    assert os.path.exists(tmp_path / "curation_summary.json")
+if __name__ == "__main__":
+    unittest.main()

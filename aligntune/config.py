@@ -40,9 +40,9 @@ class AlignTuneConfig:
     sft_val_path: str = "data/curated/sft_val.jsonl"
     dpo_pairs_path: str = "data/curated/dpo_pairs.jsonl"
     
-    sft_output_dir: str = "models/checkpoints/banking_sft"
-    dpo_output_dir: str = "models/checkpoints/banking_dpo"
-    final_adapter_dir: str = "models/banking_lora_adapter"
+    sft_output_dir: str = "models/checkpoints/shopping_sft"
+    dpo_output_dir: str = "models/checkpoints/shopping_dpo"
+    final_adapter_dir: str = "models/shopping_lora_adapter"
 
     # SFT Training Hyperparameters (6GB VRAM Profile)
     sft_num_epochs: int = 3
