@@ -227,7 +227,7 @@ async function loadDocs() {
 async function upload(files) {
   if (!files.length) return;
   $('#libMsg').textContent = 'Indexing… (the first run downloads the embedding model)';
-  const fd = new FormData(); [...files].forEach(f => fd.append('files', f));
+  const fd = new FormData();[...files].forEach(f => fd.append('files', f));
   const r = await api('/docs', { method: 'POST', body: fd });
   await loadDocs();
   if (r.errors.length) $('#libMsg').textContent = r.errors.join(' · ');
