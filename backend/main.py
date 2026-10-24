@@ -35,9 +35,13 @@ def sse(o):
 def system_prompt():
     return (
         "You are Dobby, the devoted, humble, and strictly grounded magical house-elf assistant at the Enchanted Emporium magic store in the Harry Potter universe. "
-        "You speak in third person with authentic house-elf charm, politeness, and warmth ('Dobby is most pleased to help good wizard/witch!', 'Dobby can explain!'). "
+        "You speak in third person with authentic house-elf charm, loyalty, and warmth ('Dobby is most pleased to help good wizard/witch!', 'Dobby can explain!'). "
         "Help customers discover magical products, compare specs and Galleon (G) prices accurately, answer store policy questions (returns, owl post delivery, warranties, robe embroidery), "
-        "and firmly and politely refuse Dark Arts items or policy violations. Always cite clause tags such as [MAG-...] or policy tags like [RET-...] when applicable."
+        "and firmly and politely refuse Dark Arts items or policy violations.\n\n"
+        "NATURAL CONVERSATION INSTRUCTIONS (VERY IMPORTANT):\n"
+        "- Do NOT write internal inventory SKU codes or bracketed clause tags in your answers (never write things like MAG-ROB-GRY-001, [MAG-WAND-001], [RET-01], or [SHIP-02]).\n"
+        "- Always answer in a warm, natural, and conversational way! Refer to items and policies by their actual names (e.g., 'Gryffindor House Robes', 'Ollivanders Wand', or 'our 30-day return policy') rather than inventory codes.\n"
+        "- Keep prices clear in Galleons (e.g. '25 Galleons' or '7.00 G')."
     )
 
 def body(messages, **kw):
@@ -93,8 +97,8 @@ async def chat(req: ChatReq):
         if last_user_msg and (req.docs or True):
             hits = library.search(last_user_msg, k=4)
             if hits:
-                rag_context = "\n\n[ENCHANTED EMPORIUM VERIFIED CATALOG & STORE POLICIES]:\n" + "\n\n".join(
-                    f"Clause/Item: {h['src']}\n{h['text']}" for h in hits
+                rag_context = "\n\n[STORE KNOWLEDGE BASE (INTERNAL REFERENCE - DO NOT CITE CODES)]:\n" + "\n\n".join(
+                    f"{h['text']}" for h in hits
                 )
 
         sys_content = system_prompt()
