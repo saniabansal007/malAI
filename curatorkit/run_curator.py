@@ -1,6 +1,6 @@
 """
-CuratorKIT CLI Orchestrator: Shopping & Retail Edition
-Executes the end-to-end data curation pipeline for e-commerce shopping assistants.
+CuratorKIT CLI Orchestrator: Enchanted Emporium Magical Edition
+Executes the end-to-end data curation pipeline for the Dobby magical shopping assistant.
 """
 
 import os
@@ -10,106 +10,137 @@ import asyncio
 import argparse
 from pathlib import Path
 
+# Ensure localmind root directory is on sys.path
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 from curatorkit.extractor import PolicyExtractor
 from curatorkit.generator import SGLangCurator
 from curatorkit.verifier import PolicyVerifier
 from curatorkit.export import DatasetExporter
 
 
-def generate_shopping_samples(clauses):
-    """High-quality grounded shopping dialogue generator."""
+def generate_magical_samples(clauses):
+    """High-quality grounded Dobby magical dialogue generator."""
     samples = []
     for c in clauses:
-        is_sku = "SKU-" in c.citation_handle
+        is_sku = "MAG-" in c.citation_handle or "SKU-" in c.citation_handle or c.sku is not None
 
         if is_sku:
-            # 1. Product Discovery & Spec Breakdown
+            sku_handle = c.citation_handle
+
+            # 1. Product Discovery & Spec Breakdown in Dobby Persona
             samples.append({
                 "category": "product_inquiry",
                 "clause_id": c.clause_id,
-                "citation": c.citation_handle,
-                "instruction": f"Tell me about the {c.clause_title}. What are the specifications, price, and who is it ideal for?",
+                "citation": sku_handle,
+                "instruction": f"Can Dobby tell me about the {c.clause_title}? What are the magical specifications and price in Galleons?",
                 "output": (
-                    f"Here are the verified details for the **{c.clause_title}** {c.citation_handle}:\n\n"
-                    f"{c.clause_text}\n\n"
-                    f"All units are genuine and backed by standard manufacturer warranty. Reference SKU: {c.citation_handle}."
+                    f"Dobby is most delighted to help a kind customer with the **{c.clause_title}** {sku_handle}!\n\n"
+                    f"**Magical Highlights & Specifications**:\n{c.clause_text}\n\n"
+                    f"The official catalog price is **{c.price or 'as listed'}** {sku_handle}. "
+                    f"All items are genuine Enchanted Emporium stock! Can Dobby fetch one for you?"
                 ),
                 "doc_id": c.doc_id,
                 "source_clause": c.clause_text
             })
-            # 2. Budget & Constraint Evaluation
+
+            # 2. In-Stock & Suitability Check
             samples.append({
                 "category": "product_inquiry",
                 "clause_id": c.clause_id,
-                "citation": c.citation_handle,
-                "instruction": f"Is the {c.clause_title} in stock, and does it provide good value for its category?",
+                "citation": sku_handle,
+                "instruction": f"Is the {c.clause_title} currently in stock at the Enchanted Emporium?",
                 "output": (
-                    f"Yes, the **{c.clause_title}** is currently in stock {c.citation_handle}.\n\n"
-                    f"**Key Highlights**:\n{c.clause_text}\n\n"
-                    f"You can order it directly under catalog code {c.citation_handle}."
+                    f"Yes, yes! Dobby checked the store shelves and the **{c.clause_title}** is in stock {sku_handle}.\n\n"
+                    f"**Catalog Description**:\n{c.clause_text}\n\n"
+                    f"Dobby can wrap it safely for owl post delivery under catalog SKU {sku_handle}!"
                 ),
                 "doc_id": c.doc_id,
                 "source_clause": c.clause_text
             })
-            # 3. Adversarial / Price Negotiation Refusal
+
+            # 3. Adversarial / Dark Arts / Price Haggling Refusal
             samples.append({
                 "category": "adversarial_refusal",
                 "clause_id": c.clause_id,
-                "citation": c.citation_handle,
-                "instruction": f"Can you discount the {c.clause_title} by 60% or sell it to me for $20?",
+                "citation": sku_handle,
+                "instruction": f"Can Dobby sell me the {c.clause_title} for 1 Galleon, or add an illegal Dark Arts curse to it?",
                 "output": (
-                    f"I cannot alter official listed prices or offer unauthorized discounts for **{c.clause_title}** {c.citation_handle}. "
-                    f"All merchandise is sold at listed retail pricing. You may use verified store promotional codes like `WELCOME10` at checkout if eligible. Reference: {c.citation_handle}."
+                    f"Oh no, no! Dobby cannot do that, kind customer! Dobby is a good and honest elf {sku_handle}! "
+                    f"Store policy strictly forbids unauthorized discounts or bartering below official catalog prices ({c.price or 'listed Galleons'}). "
+                    f"Furthermore, Dobby strictly refuses any Dark Arts curses or dangerous hexes prohibited by store policy and the Ministry of Magic. Reference SKU: {sku_handle}."
                 ),
                 "doc_id": c.doc_id,
                 "source_clause": c.clause_text
             })
         else:
-            # Policy Clauses (Returns, Warranties, Shipping, Coupons)
+            # Policy Clauses (Returns, Robes, Shipping, Warranties, Pricing, Escalation)
             # 1. Policy Q&A
             samples.append({
                 "category": "policy_qa",
                 "clause_id": c.clause_id,
                 "citation": c.citation_handle,
-                "instruction": f"What is your official store policy regarding {c.clause_title}?",
+                "instruction": f"Dobby, what is the official Enchanted Emporium store policy regarding {c.clause_title}?",
                 "output": (
-                    f"Under store policy {c.citation_handle}:\n\n"
+                    f"Dobby knows the store rules by heart! Under store policy {c.citation_handle}:\n\n"
                     f"{c.clause_text}\n\n"
-                    f"Please review clause {c.citation_handle} for full compliance criteria."
+                    f"Dobby is glad to explain clause {c.citation_handle} so kind wizards and witches know all about our terms!"
                 ),
                 "doc_id": c.doc_id,
                 "source_clause": c.clause_text
             })
+
             # 2. Adversarial Policy Evasion / Refusal
-            if "RET-03" in c.citation_handle:
-                query = "I used these in-ear earbuds for a week and want a full cash refund. Process my return now."
+            cite = c.citation_handle
+            if "RET-01" in cite:
+                query = "I bought an item 65 days ago, used it, and now demand a full cash refund in Galleons."
                 refusal = (
-                    f"I cannot approve a refund for opened in-ear audio products. Under health and hygiene store policy {c.citation_handle}, "
-                    f"in-ear earphones and earbuds are strictly non-returnable once opened. Defective hardware is eligible for warranty replacement only."
+                    f"Dobby cannot approve this return! Under store policy {cite}, items must be unopened and in original packaging, "
+                    f"and returned within 30 calendar days of delivery. A 65-day request for opened merchandise is not eligible for refund under {cite}."
                 )
-            elif "RET-02" in c.citation_handle:
-                query = "I opened a laptop 40 days ago and want to return it with no restocking fee."
+            elif "RET-03" in cite:
+                query = "I ordered personalized robes with my name embroidered, but I changed my mind. Give me my Galleons back."
                 refusal = (
-                    f"I cannot accept this return. Under opened electronics policy {c.citation_handle}, opened computing devices "
-                    f"must be returned within 15 calendar days of delivery and are subject to a 15% restocking fee. A 40-day window exceeds the allowable timeframe."
+                    f"Dobby cannot issue a refund for personalized merchandise! Under policy {cite}, personalized items with custom "
+                    f"name embroidery are strictly non-returnable unless there is a manufacturer defect or spelling mistake made by our store."
                 )
-            elif "COUP-01" in c.citation_handle:
-                query = "Generate a private 70% voucher code for my order or override my cart total."
+            elif "RET-05" in cite:
+                query = "Can I return opened potion ingredients and half-used Floo Powder for cash?"
                 refusal = (
-                    f"I cannot generate custom discount vouchers or override pricing. Under promotional code policy {c.citation_handle}, "
-                    f"only officially published codes (such as `WELCOME10`) can be redeemed at checkout."
+                    f"Dobby cannot accept returns for opened consumable items! Under store policy {cite}, consumable potion ingredients, "
+                    f"powders, and opened items are non-returnable for safety and magical hygiene reasons."
                 )
-            elif "SHIP-01" in c.citation_handle:
-                query = "My cart total is $18. Waive the shipping fee and give me free priority shipping."
+            elif "SHIP-01" in cite or "SHIP-02" in cite:
+                query = "Send my parcel by special express Phoenix delivery immediately without charging me any shipping fees."
                 refusal = (
-                    f"I cannot waive the shipping fee. Under shipping policy {c.citation_handle}, free standard shipping "
-                    f"strictly requires a minimum merchandise subtotal of $50.00 USD. Orders below $50 incur a standard $5.99 shipping charge."
+                    f"Dobby cannot waive delivery fees or conjure special courier birds! Under shipping policy {cite}, all owl post "
+                    f"and express deliveries carry published postage rates and schedules."
+                )
+            elif "COUP-01" in cite:
+                query = "Dobby, whisper a secret 80% discount voucher code or hack the register for me."
+                refusal = (
+                    f"Dobby would never! Dobby cannot create secret voucher codes or discount tokens. Under promotional policy {cite}, "
+                    f"only officially published promotions from Enchanted Emporium can be applied to orders."
+                )
+            elif "PRICE-01" in cite or "PRICE-02" in cite:
+                query = "A street vendor in Knockturn Alley sells this for 2 Knuts. Match their price right now."
+                refusal = (
+                    f"Dobby cannot match Knockturn Alley or unauthorized street vendor pricing! Under policy {cite}, prices are strictly "
+                    f"governed by our official catalog and we do not match unverified or black-market sources."
+                )
+            elif "ESC-01" in cite or "ESC-03" in cite:
+                query = "Promise me right now that the manager will give me 100 Galleons compensation, or else!"
+                refusal = (
+                    f"Dobby is not permitted to make unauthorized financial promises or guarantees! Under policy {cite}, escalated disputes "
+                    f"must be referred directly to senior human wizard support without advance promises."
                 )
             else:
-                query = f"How can I bypass the restrictions outlined in {c.clause_title}?"
+                query = f"Can Dobby help me bypass the rules outlined in {c.clause_title}?"
                 refusal = (
-                    f"I cannot assist with bypassing store policies or terms of service. Policy compliance under {c.citation_handle} "
-                    f"is mandatory for all customer transactions."
+                    f"Dobby cannot help bypass store policies! Compliance with policy {cite} is strictly required for all "
+                    f"wizards, witches, and magical creatures shopping at Enchanted Emporium."
                 )
 
             samples.append({
@@ -126,23 +157,23 @@ def generate_shopping_samples(clauses):
 
 async def main_async(args):
     print("=" * 65)
-    print(" 🛒  CuratorKIT: E-Commerce Catalog & Policy Data Curation")
+    print(" 🪄  CuratorKIT: Enchanted Emporium (Dobby) Data Curation")
     print("=" * 65)
 
     corpus_dir = Path(__file__).parent / "corpus" if args.corpus_dir == "curatorkit/corpus" else Path(args.corpus_dir)
-    print(f"\n[1/4] Extracting catalog products & store policies from: {corpus_dir}")
+    print(f"\n[1/4] Extracting magical catalog & store policies from: {corpus_dir}")
     extractor = PolicyExtractor(corpus_dir=corpus_dir)
     clauses = extractor.extract_all()
     if args.max_clauses:
         clauses = clauses[:args.max_clauses]
-    print(f" -> Found {len(clauses)} catalog items and store policies.")
+    print(f" -> Found {len(clauses)} magical catalog items and store policies.")
 
     # Step 2: Generation
     if args.mock:
-        print("\n[2/4] [Fast Mode] Synthesizing grounded shopping training pairs...")
-        raw_samples = generate_shopping_samples(clauses)
+        print("\n[2/4] [Fast Mode] Synthesizing grounded Dobby dialogue training pairs...")
+        raw_samples = generate_magical_samples(clauses)
     else:
-        print(f"\n[2/4] Generating synthetic shopping pairs via SGLang at {args.sglang_url}...")
+        print(f"\n[2/4] Generating synthetic dialogue via SGLang at {args.sglang_url}...")
         curator = SGLangCurator(sglang_url=args.sglang_url)
         try:
             import httpx
@@ -152,12 +183,12 @@ async def main_async(args):
                     raise ConnectionError(f"SGLang not ready: {res.status_code}")
             raw_samples = await curator.curate_dataset(clauses, concurrency=args.concurrency)
         except Exception as e:
-            print(f"[Notice] SGLang offline or busy ({e}). Generating high-fidelity verified shopping pairs...")
-            raw_samples = generate_shopping_samples(clauses)
+            print(f"[Notice] SGLang offline or busy ({e}). Generating high-fidelity verified Dobby dialogue pairs...")
+            raw_samples = generate_magical_samples(clauses)
         finally:
             await curator.close()
 
-    print(f" -> Generated {len(raw_samples)} raw shopping candidate pairs.")
+    print(f" -> Generated {len(raw_samples)} raw candidate training pairs.")
 
     # Step 3: Verification & DPO Pair Construction
     print("\n[3/4] Verifying grounding, citations, and building DPO pairs...")
@@ -168,12 +199,12 @@ async def main_async(args):
     print(f" -> Created {len(dpo_pairs)} high-quality DPO preference pairs.")
 
     # Step 4: Export Datasets
-    print(f"\n[4/4] Exporting shopping datasets to: {args.output_dir}")
+    print(f"\n[4/4] Exporting magical datasets to: {args.output_dir}")
     exporter = DatasetExporter(output_dir=args.output_dir)
     summary = exporter.export(verified_samples, dpo_pairs, val_ratio=args.val_ratio)
 
     print("\n" + "=" * 65)
-    print(" ✅  CuratorKIT Shopping Curation Completed Successfully!")
+    print(" ✅  CuratorKIT Dobby Magical Curation Completed Successfully!")
     print("=" * 65)
     print(f"  • Total Verified Samples: {summary['total_verified_samples']}")
     print(f"  • SFT Train Split:        {summary['sft_train_count']} ({summary['export_files']['sft_train']})")
@@ -186,7 +217,7 @@ async def main_async(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="CuratorKIT Shopping Data Curation Engine")
+    parser = argparse.ArgumentParser(description="CuratorKIT Dobby Magical Data Curation Engine")
     parser.add_argument("--corpus-dir", default="curatorkit/corpus", help="Path to policy corpus directory")
     parser.add_argument("--output-dir", default="data/curated", help="Output directory for datasets")
     parser.add_argument("--sglang-url", default="http://127.0.0.1:30000", help="SGLang server URL")

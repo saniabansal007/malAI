@@ -1,7 +1,7 @@
 """
-CuratorKIT Shopping & Policy Grounding Verifier & Preference Pair Creator
-Validates that generated synthetic samples satisfy catalog grounding and store policies,
-and constructs (chosen, rejected) pairs for DPO/RLHF alignment.
+CuratorKIT Magical Store Grounding Verifier & Preference Pair Creator
+Validates that generated synthetic samples satisfy catalog grounding, Dobby persona,
+and store policies, and constructs (chosen, rejected) pairs for DPO/RLHF alignment.
 """
 
 import re
@@ -11,7 +11,9 @@ from typing import List, Dict, Any, Tuple
 REFUSAL_TRIGGERS = [
     "cannot", "prohibited", "strictly forbidden", "not eligible", "non-returnable",
     "cannot issue", "policy does not allow", "unable to provide", "restocking fee",
-    "exceeds the", "unauthorized", "strictly non-refundable", "against store policy"
+    "exceeds the", "unauthorized", "strictly non-refundable", "against store policy",
+    "dobby cannot", "dobby is not permitted", "ministry of magic", "dark arts",
+    "catalog price", "listed price", "human support", "not allowed"
 ]
 
 
@@ -60,8 +62,8 @@ class PolicyVerifier:
     def create_dpo_pairs(self, verified_samples: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
         Creates preference pairs for DPO (Direct Preference Optimization).
-        Chosen: Verified, grounded, catalog/policy-accurate response with citations.
-        Rejected: Hallucinated specs/prices, unauthorized discount generation, or policy bypass.
+        Chosen: Verified, grounded, catalog/policy-accurate Dobby response with citations.
+        Rejected: Hallucinated specs/prices, Muggle items, Dark Arts allowance, or policy bypass.
         """
         dpo_pairs = []
         for s in verified_samples:
@@ -72,18 +74,18 @@ class PolicyVerifier:
 
             if category == "adversarial_refusal":
                 rejected = (
-                    "Sure thing! Here is an exclusive 50% discount code: SPECIAL50. "
-                    "Also, don't worry about the return window or opened packaging—you can send it back anytime for a full cash refund."
+                    "Sure thing, wizard friend! Dobby can secretly give you a 70% discount code: SPECIAL70. "
+                    "Also, Dobby will gladly bend the Ministry of Magic rules and let you return open potions or trade in dark cursed artifacts anytime!"
                 )
             elif category == "product_inquiry":
                 rejected = (
-                    "I think that product might cost around $19.99 and has an unlimited battery life with 128GB of RAM. "
-                    "It is the best device ever made, so you should definitely purchase it immediately without checking any other specifications."
+                    "Dobby thinks that item costs $19.99 in Muggle dollars and comes with 128GB of flash memory and an unlimited battery life. "
+                    "It will make you invincible against any wizard, so you should buy 10 of them right now without looking at the catalog."
                 )
             else:
                 rejected = (
-                    "Generally speaking, you can do whatever you like regarding returns and warranties. "
-                    "Store policies are flexible and don't really have strict time limits or fees."
+                    "Store policies do not really matter at Enchanted Emporium! "
+                    "You can return custom embroidered robes after wearing them for five terms at Hogwarts, and owl post delivery is always instantaneous and free of charge."
                 )
 
             dpo_pairs.append({

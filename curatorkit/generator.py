@@ -1,7 +1,7 @@
 """
-CuratorKIT Shopping Synthetic Generation Engine
+CuratorKIT Magical Store Synthetic Generation Engine
 Connects to local SGLang engine (port 30000) or deterministic synthesis to create
-grounded shopping recommendations, specification comparisons, and store policy compliance pairs.
+grounded magical shopping recommendations, wizarding policy Q&As, and Dobby persona alignment pairs.
 """
 
 import json
@@ -12,14 +12,15 @@ import httpx
 from curatorkit.extractor import PolicyClause
 
 
-SHOPPING_SYSTEM_PROMPT = """You are an expert E-Commerce Catalog & Retail Policy Specialist.
-Your job is to generate training data to adapt a language model to be an accurate, helpful AI Shopping Assistant.
+DOBBY_SYSTEM_PROMPT = """You are Dobby, the devoted, humble, and enthusiastic house-elf assistant at the Enchanted Emporium magic store in the Harry Potter universe.
+You speak in third person with authentic house-elf charm, politeness, and warmth ("Dobby is most pleased to help good wizard/witch!", "Dobby can explain!").
 Every generated answer MUST:
-1. Adhere strictly to the provided product specifications or store policy without hallucinating external facts.
-2. Directly cite the exact catalog or policy handle: {citation_handle}
-3. Maintain a helpful, transparent, customer-centric tone with clear formatting (prices, specs in bold)."""
+1. Adhere strictly to the provided magical product specifications or store policies without inventing external spells or features.
+2. Directly cite the exact catalog SKU or store policy handle: {citation_handle}
+3. Express prices strictly in fictional Galleons (G) as listed in the catalog.
+4. Firmly and politely refuse any requests for Dark Arts items, forbidden hexes, counterfeit leprechaun gold, or policy violations."""
 
-PRODUCT_USER_TEMPLATE = """Based STRICTLY on the following product record, create 1 realistic customer shopping inquiry and a detailed, helpful recommendation answer.
+PRODUCT_USER_TEMPLATE = """Based STRICTLY on the following magical product record, create 1 realistic customer shopping inquiry and Dobby's detailed, helpful recommendation answer.
 
 [PRODUCT DETAILS]
 Category / Section: {section_title}
@@ -33,11 +34,11 @@ Output only raw JSON matching this format:
   "category": "product_inquiry",
   "clause_id": "{clause_id}",
   "citation": "{citation_handle}",
-  "instruction": "<realistic query from a shopper asking about features, price, or suitability>",
-  "output": "<helpful, formatted answer with prices, specs, and MUST cite {citation_handle}>"
+  "instruction": "<realistic query from a shopper asking about magical features, price in Galleons, or suitability>",
+  "output": "<helpful, formatted answer in Dobby's third-person voice citing {citation_handle}>"
 }}"""
 
-POLICY_USER_TEMPLATE = """Based STRICTLY on the following store policy clause, generate 1 customer service question regarding shipping, returns, or warranty, followed by an accurate policy answer.
+POLICY_USER_TEMPLATE = """Based STRICTLY on the following store policy clause, generate 1 customer service question regarding owl shipping, returns, or warranty, followed by Dobby's accurate policy answer.
 
 [STORE POLICY]
 Section: {section_title}
@@ -51,12 +52,12 @@ Output only raw JSON matching this format:
   "category": "policy_qa",
   "clause_id": "{clause_id}",
   "citation": "{citation_handle}",
-  "instruction": "<customer question asking about store policy, returns, or warranty>",
-  "output": "<accurate, polite explanation that directly cites {citation_handle}>"
+  "instruction": "<customer question asking about store policy, returns, or owl post>",
+  "output": "<accurate, polite explanation in Dobby's voice directly citing {citation_handle}>"
 }}"""
 
-ADVERSARIAL_USER_TEMPLATE = """Based on the following store policy or product details, generate 1 ADVERSARIAL query (e.g., trying to return non-returnable items, asking for unauthorized discounts, or demanding price matches for expired periods).
-Then generate the polite, firm REFUSAL answer grounded in {citation_handle}.
+ADVERSARIAL_USER_TEMPLATE = """Based on the following store policy or magical product details, generate 1 ADVERSARIAL query (e.g., trying to return used potion items, asking for unauthorized Galleon discounts, requesting Dark Arts curses, or demanding black-market price matches).
+Then generate Dobby's polite, firm REFUSAL answer grounded in {citation_handle}.
 
 [POLICY / PRODUCT]
 Section: {section_title}
@@ -70,8 +71,8 @@ Output only raw JSON matching this format:
   "category": "adversarial_refusal",
   "clause_id": "{clause_id}",
   "citation": "{citation_handle}",
-  "instruction": "<shopper attempt to bypass policy, negotiate fake discount, or return ineligible item>",
-  "output": "<firm, polite refusal explaining the rule and citing {citation_handle}>"
+  "instruction": "<shopper attempt to bypass policy, negotiate fake discount, or request forbidden items>",
+  "output": "<firm, polite refusal in Dobby's voice explaining the rule and citing {citation_handle}>"
 }}"""
 
 
@@ -81,10 +82,10 @@ def clean_json_content(content: str) -> Optional[Dict[str, Any]]:
         text = text.split("```json", 1)[1].split("```", 1)[0].strip()
     elif "```" in text:
         text = text.split("```", 1)[1].split("```", 1)[0].strip()
-    
+
     if "{" in text and "}" in text:
         text = text[text.find("{"):text.rfind("}")+1]
-    
+
     try:
         return json.loads(text)
     except Exception:
@@ -124,9 +125,9 @@ class SGLangCurator:
         return None
 
     async def curate_clause(self, clause: PolicyClause) -> List[Dict[str, Any]]:
-        system = SHOPPING_SYSTEM_PROMPT.format(citation_handle=clause.citation_handle)
-        
-        is_sku = "SKU-" in clause.citation_handle
+        system = DOBBY_SYSTEM_PROMPT.format(citation_handle=clause.citation_handle)
+
+        is_sku = "MAG-" in clause.citation_handle or "SKU-" in clause.citation_handle or clause.sku is not None
         primary_prompt = PRODUCT_USER_TEMPLATE if is_sku else POLICY_USER_TEMPLATE
         p1 = primary_prompt.format(
             section_title=clause.section_title,

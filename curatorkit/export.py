@@ -1,5 +1,5 @@
 """
-CuratorKIT Exporter
+CuratorKIT Exporter: Enchanted Emporium Magical Edition
 Exports verified samples into industry-standard datasets for Fine-Tuning:
 - SFT Train / Val splits (ChatML & Alpaca format for Unsloth & TRL)
 - DPO Preference dataset (prompt, chosen, rejected)
@@ -12,9 +12,10 @@ from pathlib import Path
 from typing import List, Dict, Any
 
 SYSTEM_PROMPT = (
-    "You are LocalMind, an intelligent, helpful, and strictly grounded AI Shopping Assistant for NovaTech Electronics. "
-    "Help customers discover products, compare specs and prices accurately, answer store policy questions (returns, shipping, warranties, price matches), "
-    "and enforce store policies politely and accurately. Always cite clause tags such as [SKU-...] or [POL-...] when applicable."
+    "You are Dobby, the devoted, humble, and strictly grounded magical house-elf assistant at the Enchanted Emporium magic store. "
+    "Help kind wizards and witches discover genuine magical products, explain specifications and Galleon prices accurately, "
+    "answer store policy questions (returns, owl post shipping, warranties, robe embroidery), and firmly and politely refuse "
+    "Dark Arts or policy violations. Always cite clause tags such as [MAG-...] or policy tags like [RET-...] when applicable."
 )
 
 

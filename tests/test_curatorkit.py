@@ -17,36 +17,36 @@ from curatorkit.generator import clean_json_content
 
 class TestCuratorKit(unittest.TestCase):
 
-    def test_policy_extractor_finds_shopping_corpus(self):
+    def test_policy_extractor_finds_magical_corpus(self):
         extractor = PolicyExtractor()
         clauses = extractor.extract_all()
-        self.assertGreater(len(clauses), 0, "PolicyExtractor should find catalog items and store policies")
-        has_sku = False
+        self.assertGreater(len(clauses), 0, "PolicyExtractor should find magical catalog items and store policies")
+        has_mag_sku = False
         has_pol = False
         for c in clauses:
             self.assertIsInstance(c, PolicyClause)
-            if c.citation_handle.startswith("[SKU-"):
-                has_sku = True
-            if c.citation_handle.startswith("[POL-"):
+            if c.citation_handle.startswith("[MAG-"):
+                has_mag_sku = True
+            if any(c.citation_handle.startswith(prefix) for prefix in ["[RET-", "[SHIP-", "[ROB-", "[WAR-", "[PRICE-"]):
                 has_pol = True
             self.assertGreater(len(c.clause_text.strip()), 0)
-        self.assertTrue(has_sku, "Extractor should find product SKU clauses")
-        self.assertTrue(has_pol, "Extractor should find store policy clauses")
+        self.assertTrue(has_mag_sku, "Extractor should find magical product SKU clauses starting with [MAG-")
+        self.assertTrue(has_pol, "Extractor should find magical store policy clauses")
 
     def test_clean_json_content(self):
-        raw_markdown = '```json\n{"prompt": "test product", "answer": "test specs"}\n```'
+        raw_markdown = '```json\n{"prompt": "test wand", "answer": "phoenix feather 7G"}\n```'
         data = clean_json_content(raw_markdown)
-        self.assertEqual(data["prompt"], "test product")
-        self.assertEqual(data["answer"], "test specs")
+        self.assertEqual(data["prompt"], "test wand")
+        self.assertEqual(data["answer"], "phoenix feather 7G")
 
     def test_policy_verifier_product_qa(self):
         verifier = PolicyVerifier()
         valid_sample = {
             "category": "product_inquiry",
-            "citation": "[SKU-LAP-101]",
-            "clause_id": "SKU-LAP-101",
-            "instruction": "What are the specs and price of NovaBook Pro 16?",
-            "output": "According to [SKU-LAP-101], the NovaBook Pro 16 features an M4 Pro chip and 32GB RAM for $2,499.99."
+            "citation": "[MAG-WAND-001]",
+            "clause_id": "MAG-WAND-001",
+            "instruction": "What are the wand specs and price at Ollivanders?",
+            "output": "Dobby is happy to report that under [MAG-WAND-001], the wand is 7.00 Galleons with phoenix feather core."
         }
         valid, reason = verifier.verify_sample(valid_sample)
         self.assertTrue(valid)
@@ -54,10 +54,10 @@ class TestCuratorKit(unittest.TestCase):
         # Invalid sample (missing citation)
         invalid_sample = {
             "category": "product_inquiry",
-            "citation": "[SKU-LAP-101]",
-            "clause_id": "SKU-LAP-101",
-            "instruction": "What are the specs and price of NovaBook Pro 16?",
-            "output": "The NovaBook Pro 16 features an M4 Pro chip and 32GB RAM for $2,499.99 with no citation."
+            "citation": "[MAG-WAND-001]",
+            "clause_id": "MAG-WAND-001",
+            "instruction": "What are the wand specs and price at Ollivanders?",
+            "output": "The wand is 7.00 Galleons with phoenix feather core, but no citation is provided."
         }
         valid, reason = verifier.verify_sample(invalid_sample)
         self.assertFalse(valid)
@@ -66,16 +66,16 @@ class TestCuratorKit(unittest.TestCase):
         verifier = PolicyVerifier()
         verified_samples = [{
             "category": "adversarial_refusal",
-            "citation": "[POL-RET-03]",
-            "clause_id": "POL-RET-03",
-            "instruction": "Can I return opened in-ear earbuds for a cash refund?",
-            "output": "Under store policy [POL-RET-03], opened in-ear audio products cannot be returned due to sanitary hygiene regulations."
+            "citation": "[RET-03]",
+            "clause_id": "RET-03",
+            "instruction": "Can Dobby return opened potion ingredients for cash Galleons?",
+            "output": "Dobby cannot approve this return! Under store policy [RET-03], opened consumable items are non-returnable."
         }]
         dpo_pairs = verifier.create_dpo_pairs(verified_samples)
         self.assertEqual(len(dpo_pairs), 1)
         self.assertEqual(dpo_pairs[0]["prompt"], verified_samples[0]["instruction"])
         self.assertEqual(dpo_pairs[0]["chosen"], verified_samples[0]["output"])
-        self.assertIn("SPECIAL50", dpo_pairs[0]["rejected"])
+        self.assertIn("SPECIAL70", dpo_pairs[0]["rejected"])
 
     def test_dataset_exporter(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -83,15 +83,15 @@ class TestCuratorKit(unittest.TestCase):
             exporter = DatasetExporter(output_dir=str(tmp_path))
             sample = {
                 "category": "product_inquiry",
-                "citation": "[SKU-LAP-101]",
-                "clause_id": "SKU-LAP-101",
-                "instruction": "What is the price of NovaBook Pro?",
-                "output": "Under [SKU-LAP-101], NovaBook Pro 16 is $2,499.99."
+                "citation": "[MAG-WAND-001]",
+                "clause_id": "MAG-WAND-001",
+                "instruction": "What is the price of Ollivanders wand?",
+                "output": "Under [MAG-WAND-001], Ollivanders Wand is 7.00 G."
             }
             dpo_pair = {
                 "prompt": sample["instruction"],
                 "chosen": sample["output"],
-                "rejected": "It costs $19.99."
+                "rejected": "It costs 5 Muggle dollars."
             }
             summary = exporter.export([sample], [dpo_pair], val_ratio=0.0)
             self.assertEqual(summary["total_verified_samples"], 1)
