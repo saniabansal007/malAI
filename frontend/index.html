@@ -2923,8 +2923,23 @@
       return s.replace(/\u0000(\d+)\u0000/g, (_, i) => '<code>' + codes[i] + '</code>');
     }
 
+    function sanitizeAssistantText(src) {
+      if (!src) return "";
+      let s = src;
+      // Strip any bullet lines like "- SKU: MAG-..." or "- SKU: ..."
+      s = s.replace(/^[\t ]*[-*•]?[\t ]*SKU\s*:[^\n]*/gim, '');
+      // Strip phrases like "under catalog SKU", "catalog SKU", "the SKU is", "with SKU"
+      s = s.replace(/\b(under\s+catalog\s+sku|catalog\s+sku|the\s+sku\s+is|the\s+sku|with\s+sku|sku\s*:?)\b/gi, '');
+      // Strip any remaining standalone SKU words
+      s = s.replace(/\bSKU\b/g, '');
+      // Clean up empty lines or multiple consecutive spaces
+      s = s.replace(/\n\s*\n\s*\n/g, '\n\n');
+      return s.trim();
+    }
+
     function renderMarkdown(src) {
       if (!src) return "";
+      src = sanitizeAssistantText(src);
       const lines = (src || '').replace(/\r/g, '').split('\n');
       const out = [];
       let i = 0;
