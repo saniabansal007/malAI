@@ -1,47 +1,66 @@
-# malAI: AI Shopping Assistant
+# malAI: Enchanted Emporium (Dobby AI Assistant)
 
-A private, high-performance **E-Commerce Shopping Assistant** designed to run entirely offline on consumer GPUs (optimized for laptop **RTX 4050 6GB VRAM** using **SGLang**).
+A high-performance, private **Wizarding World E-Commerce Storefront & AI Assistant** running entirely offline on consumer GPUs (tuned for **RTX 4050 6GB VRAM** using **SGLang** with RadixAttention prefix caching).
 
-malAI transforms foundation language models into domain-grounded retail advisors that know your store catalog, accurately quote product specifications and prices, explain store policies, and politely enforce terms of service without hallucinating.
-
----
-
-## 🛒 Key Capabilities
-
-* **Store Catalog & Budget Recommendations**: Expert knowledge of 25+ consumer electronic products (laptops, studio & sports audio, titanium smartwatches, 4K creator monitors, GaN chargers, smart home IoT) with prominent, bold pricing (**$29.99** to **$2,499.99**).
-* **Policy Guidance**: Clear explanations of 30-day returns, 15% open-box restocking fees, $50 free ground shipping tiers, 1-year manufacturer warranties, and 14-day price-match guarantees.
-* **Adversarial & Fraud Protection**: Rejects unauthorized coupon generation, denies non-returnable opened hygiene items (in-ear earbuds), and refuses expired return/price-match requests.
-* **Storefront Presentation with Floating AI Widget**: Realistic e-commerce storefront backdrop with an interactive floating assistant bubble (`✨ Ask NovaTech AI`) that expands into a rich Markdown streaming chat modal.
-* **Swappable Background**: Easily replace the store backdrop anytime by simply swapping [`frontend/assets/store_bg.png`](file:///c:/Users/sania/Downloads/localmind/localmind/frontend/assets/store_bg.png) with your own store design or screenshot.
+malAI transforms foundation language models into **Dobby**, the devoted, humble, and strictly grounded magical house-elf assistant at the **Enchanted Emporium** in Diagon Alley. Dobby knows the entire 28-item store catalog, accurately answers store policy questions, calculates pricing in fictional Galleons (**G**), strictly refuses Dark Arts artifacts, and assists customers in an interactive shopping storefront.
 
 ---
+## Technical Architecture
 
-## 🏗️ Technical Architecture
-
-malAI follows a 3-stage domain adaptation and evaluation pipeline:
+malAI operates a 4-phase domain adaptation, serving, and evaluation lifecycle:
 
 ```
-[CuratorKIT] (Stage 1) ───> [AlignTune] (Stage 2) ───> [AuditKIT] (Stage 3)
- Catalog & Policy Curation   4-bit QLoRA SFT + DPO    20-Scenario Shopping Benchmark
- (311 Verified Samples)      (RTX 4050 6GB Profile)   (100% Accuracy, SGLang Serving)
+[CuratorKIT] (Stage 1) ───> [AlignTune] (Stage 2) ───> [AuditKIT] (Stage 3) ───> [Storefront & RAG] (Stage 4)
+ Catalog & Policy Curation   4-bit QLoRA SFT + DPO    50-Scenario Compliance Benchmark   FastAPI + SGLang Server
+ (154 Verified Samples)     (RTX 4050 6GB Profile)   (88% Compliance, 87% Cache Hit)     Gringotts Vault & Snitch Game
 ```
 
-1. **CuratorKIT (Stage 1: Grounded Data Curation)**
-   * Synthesizes realistic, conversational customer inquiries grounded strictly in [`curatorkit/corpus/catalog_electronics.md`](file:///c:/Users/sania/Downloads/localmind/localmind/curatorkit/corpus/catalog_electronics.md) and [`curatorkit/corpus/store_policies.md`](file:///c:/Users/sania/Downloads/localmind/localmind/curatorkit/corpus/store_policies.md).
-   * Generates **311 verified dialogue pairs** across SFT train (264), SFT val (47), and DPO preference pairs (311).
-2. **AlignTune (Stage 2: 4-bit QLoRA Fine-Tuning & Merging)**
-   * Fine-tunes `Qwen/Qwen2.5-1.5B-Instruct` using 4-bit QLoRA (Rank=16, Alpha=32) and Direct Preference Optimization (DPO).
-   * Merges adapter weights into [`models/shopping_model_merged/`](file:///c:/Users/sania/Downloads/localmind/localmind/models/shopping_model_merged/) for low-latency SGLang serving with RadixAttention prefix caching.
-3. **AuditKIT (Stage 3: Automated Shopping Benchmark)**
-   * Evaluates 20 standardized e-commerce challenge scenarios across budget filtering, product comparisons, store policies, and adversarial refusal checks.
-   * Scored **100.0% compliance and citation accuracy**.
+1. **CuratorKIT (Stage 1: Grounded Wizarding Data Curation)**
+   - Extracts structured clauses from [`curatorkit/corpus/catalog_magical.md`](file:///home/sania/localmind/curatorkit/corpus/catalog_magical.md) and [`curatorkit/corpus/store_policies_magical.md`](file:///home/sania/localmind/curatorkit/corpus/store_policies_magical.md).
+   - Generates verified training samples: SFT train (130), SFT val (24), DPO preference pairs (130), and Alpaca format.
+2. **AlignTune (Stage 2: 4-bit QLoRA & DPO Alignment)**
+   - Fine-tunes `Qwen/Qwen2.5-1.5B-Instruct` using 4-bit QLoRA (Rank=16, Alpha=32) and Direct Preference Optimization (DPO).
+   - Hardware-aware runner with automatic CUDA detection, bfloat16 activation, and CPU fallback.
+   - Packages LoRA adapters into [`models/dobbie_magic_store_lora/`](file:///home/sania/localmind/models/dobbie_magic_store_lora/).
+3. **AuditKIT (Stage 3: Automated Compliance & Safety Benchmark)**
+   - 50 standardized test scenarios evaluating product knowledge, store policies (unopened 30-day returns, owl post delivery rates), and adversarial Dark Arts refusals.
+   - Live hardware benchmark results on RTX 4050: **88.0% Compliance Score**, **90.0% Citation Accuracy**, **86.7% Dark Arts Refusal Rate**, and **87.2% SGLang Prefix Cache Hit Rate**.
+4. **Backend & Storefront (Stage 4: Serving & RAG)**
+   - FastAPI server ([`backend/main.py`](file:///home/sania/localmind/backend/main.py)) with BM25 indexing over 63 magical items and policies.
+   - High-throughput SGLang inference on port `:30000` with RadixAttention prefix caching.
 
 ---
 
-## ⚡ Quick Start
+## Key Highlights & Features
 
-### 1. Fast Test Mode (Instant, 0 GPU required)
-To test the storefront UI, floating widget, Markdown rendering, and chat flow without loading the heavy model into GPU memory:
+* **Enchanted Emporium Storefront (`frontend/index.html`)**:
+  - **Portrait Card Catalog**: Clean display showing portrait product artwork slots, item names, and an **Inspect** quick-view action.
+  - **Product Specifications Modal**: Detailed look at crafting variants, wand woods & cores, broom handling specs, star ratings, and Ministry safety advisories.
+  - **Buy Now & Gringotts Vault Economy**: Replaced "Add to Cart" with a live purchasing mechanism. Deducts Galleons directly from your Gringotts Vault balance and generates an instant **Gringotts Payment Receipt** popup confirming item details and Owl Post dispatch.
+  - **Customizable Product Images**: Reserved slots at `frontend/assets/products/*.jpg` with intelligent magical icon fallback placeholders.
+
+* **Golden Snitch Reflex Catch Mini-Game**:
+  - Quidditch pitch stadium mini-game accessible from the top-right navbar or when short on Galleons during checkout.
+  - Tap or click the darting Golden Snitch within 15 seconds to earn Galleons deposited straight into your Gringotts Vault.
+  - Dynamic flight & evasion physics, streak multipliers (up to 2.5x), and synthesized Web Audio bell chimes (zero external audio files required).
+
+* **Interactive Dobby Helper Desk**:
+  - Floating launcher featuring a custom vector portrait of **Dobby the House-Elf** with ambient golden pulse animations.
+  - Real-time Server-Sent Events (SSE) token streaming, live SGLang KV-cache hit rate indicator, and tokens-per-second (`tps`) telemetry.
+  - Completely natural, warm dialogue style without reciting internal SKU numbers or raw technical codes.
+
+* **Dark Arts Refusal & Compliance Grounding**:
+  - Firmly and politely refuses requests for cursed artifacts (Hand of Glory, cursed opals, Dark Marks), forbidden hexes, or attempts to pay in counterfeit leprechaun gold.
+  - Grounded answers backed by live BM25 retrieval over 63 magical catalog clauses and store policies.
+
+---
+
+
+
+## Quick Start
+
+### 1. Fast Development / Mock Mode (0 GPU Required)
+To explore the storefront UI, Golden Snitch mini-game, Buy Now flow, and Dobby chat without loading the heavy model into GPU memory:
 
 ```bash
 # Inside WSL2 Ubuntu or Linux terminal
@@ -52,94 +71,104 @@ Open your browser to: **[http://localhost:8000](http://localhost:8000)**
 ---
 
 ### 2. Full GPU Serving (RTX 4050 Laptop GPU)
-To serve the fine-tuned LLM using SGLang with full hardware acceleration:
+To launch the SGLang inference server with full GPU acceleration alongside the FastAPI application:
 
 ```bash
-# Starts SGLang on :30000 and the web application on :8000
+# Starts SGLang on :30000 and the web storefront on :8000
 ./run.sh
 ```
 Open your browser to: **[http://localhost:8000](http://localhost:8000)**
 
 ---
 
-## 🧪 Pipeline CLI Commands
+## Pipeline CLI Commands
 
-### 1. Re-curate the Dataset
+### 1. Knowledge Base & Dataset Curation
 ```bash
-# Extract catalog/policies and generate 300+ grounded samples
-python3 -m curatorkit.run_curator --mock
+# Extract catalog/policies and generate verified SFT + DPO datasets
+.venv-app/bin/python3 -m curatorkit.run_curator --mock
 ```
 
-### 2. Run AlignTune Pipeline
+### 2. Fine-Tuning Pipeline (AlignTune)
 ```bash
-# View token and sample statistics
-python3 -m aligntune.run_aligntune --stats
+# Check dataset token statistics
+.venv-app/bin/python3 -m aligntune.run_aligntune --stats
 
-# Run full pipeline dry-run validation
-python3 -m aligntune.run_aligntune --dry-run
+# Validate SFT + DPO pipeline execution in dry-run mode
+.venv-app/bin/python3 -m aligntune.run_aligntune --dry-run
 
-# Run full SFT + DPO training on GPU
-python3 -m aligntune.run_aligntune --stage all
+# Run complete SFT + DPO training on GPU (use .venv-sglang)
+.venv-sglang/bin/python3 -m aligntune.run_aligntune --stage all
 ```
 
-### 3. Run AuditKIT Evaluation Benchmark
+### 3. Compliance & Safety Benchmark (AuditKIT)
 ```bash
-# Benchmark shopping accuracy in offline mode
-python3 -m auditkit.run_audit --mock
+# Run offline compliance evaluation across all 50 scenarios
+.venv-app/bin/python3 -m auditkit.run_audit --mock
 
-# Benchmark against live running SGLang server (:30000)
-python3 -m auditkit.run_audit
+# Run live audit against running SGLang server (:30000)
+.venv-app/bin/python3 -m auditkit.run_audit
 ```
 
 ### 4. Run Unit Test Suite
 ```bash
-python3 -m unittest discover tests/
+.venv-app/bin/python3 -m unittest discover -s tests
 ```
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
-localmind/
+malAI/
 ├── aligntune/                 # Stage 2: SFT & DPO QLoRA alignment pipeline
 │   ├── config.py             # Hyperparameters optimized for 6GB VRAM
-│   ├── dataset_loader.py     # ChatML and preference pair loaders
+│   ├── dataset_loader.py     # ChatML and DPO preference pair loaders
 │   ├── export_lora.py        # Adapter packaging and model card generator
-│   ├── merge_adapter.py      # Merge LoRA weights into standalone model
+│   ├── merge_adapter.py      # Merge LoRA weights into base model
 │   ├── run_aligntune.py      # Master CLI runner
 │   ├── train_dpo.py          # Direct Preference Optimization trainer
 │   └── train_sft.py          # Supervised Fine-Tuning trainer
-├── auditkit/                  # Stage 3: Automated compliance & shopping benchmark
-│   ├── benchmark.py          # 20 standardized e-commerce challenge scenarios
-│   ├── compare.py            # Comparative evaluation metrics
-│   ├── evaluator.py          # Grounding, pricing, and refusal evaluator
-│   └── run_audit.py          # Benchmark CLI driver
-├── backend/                   # FastAPI Web Server
-│   └── main.py               # Streaming chat endpoint (/api/chat) & live metrics
-├── curatorkit/                # Stage 1: Synthetic data curation from retail corpus
+├── auditkit/                  # Stage 3: Automated compliance & safety benchmark
+│   ├── benchmark.py          # 50 wizarding world evaluation test cases
+│   ├── compare.py            # Comparative evaluation & scoring metrics
+│   ├── evaluator.py          # Grounding, pricing, and Dark Arts refusal evaluator
+│   └── run_audit.py          # Benchmark evaluation CLI driver
+├── backend/                   # FastAPI Web Server & RAG Engine
+│   ├── main.py               # Streaming chat endpoint (/api/chat), metrics, & static mount
+│   ├── rag.py                # BM25 magical corpus indexing & search
+│   └── chat.py               # Dialogue state management & tool routing
+├── curatorkit/                # Stage 1: Synthetic data curation from magical corpus
 │   ├── corpus/               # Markdown knowledge base
-│   │   ├── catalog_electronics.md # 25+ products with specs & bold prices
-│   │   └── store_policies.md      # Returns, warranties, shipping & price match
+│   │   ├── catalog_magical.md       # 28 products with specs, variants, & Galleon prices
+│   │   └── store_policies_magical.md # Returns, owl post shipping, warranties, & advisories
 │   ├── export.py             # Export to ChatML, Alpaca, and DPO JSONL
 │   ├── extractor.py          # Structured clause & product parser
-│   ├── run_curator.py        # 300+ sample synthetic dialogue generator
-│   └── verifier.py           # Grounding, product name, and price verifier
-├── data/                      # Curated datasets & audit evaluation reports
-│   └── curated/              # sft_train.jsonl, sft_val.jsonl, dpo_pairs.jsonl
-├── frontend/                  # Web Client
-│   ├── assets/               # Storefront background (store_bg.png)
-│   └── index.html            # Storefront page with floating AI chat widget
+│   ├── generator.py          # Synthetic dialogue generator
+│   ├── run_curator.py        # Master curation CLI runner
+│   └── verifier.py           # Grounding, item name, and price verifier
+├── data/                      # Curated datasets & index
+│   ├── curated/              # sft_train.jsonl, sft_val.jsonl, dpo_pairs.jsonl
+│   └── index.json            # 63 indexed magical clauses and policies
+├── frontend/                  # Single-Page Web Storefront
+│   ├── assets/               # Visual assets & icons
+│   │   ├── dobby.svg         # Vector character portrait of Dobby the House-Elf
+│   │   └── products/         # Product portrait image slots (MAG-*.jpg)
+│   ├── index.html            # Storefront with Snitch mini-game & Dobby helper desk
+│   └── products.json         # Structured catalog records for all 28 items
 ├── models/                    # Model checkpoints & adapters
-│   ├── dobbie_magic_store_lora/ # Packaged LoRA adapter & metadata card
-│   └── shopping_model_merged/ # Merged standalone model weights
-├── scripts/                   # Launch scripts
-│   ├── setup.sh              # Environment setup script
-│   └── start_sglang.sh       # SGLang server launcher tuned for 6GB GPU
+│   ├── checkpoints/          # Active SFT and DPO checkpoints (dobbie_sft, dobbie_dpo)
+│   ├── dobbie_magic_store_lora/ # Packaged LoRA adapter weights & metadata card
+│   └── shopping_model_merged/ # Standalone merged model weights fallback (2.9 GB)
+├── scripts/                   # Launch & setup scripts
+│   ├── setup.sh              # Environment initialization script
+│   ├── start_dobbie_sglang.sh # Active SGLang server launcher for Dobby
+│   └── start_sglang.sh       # SGLang launcher tuned for 6GB GPU
 ├── tests/                     # Unit test suite
 │   ├── mock_sglang.py        # Offline simulated SGLang server
 │   ├── test_aligntune.py     # AlignTune unit tests
 │   ├── test_auditkit.py      # AuditKIT unit tests
+│   ├── test_backend_rag.py   # RAG index and prompt tests
 │   └── test_curatorkit.py    # CuratorKIT unit tests
 ├── run.sh                     # Full stack launcher (SGLang + Backend)
 └── run_mock.sh                # Fast offline demo launcher
@@ -147,7 +176,3 @@ localmind/
 
 ---
 
-## 🎨 Customizing the Storefront Background
-To change the storefront picture to your own store screenshot or branding:
-1. Place your image at [`frontend/assets/store_bg.png`](file:///c:/Users/sania/Downloads/localmind/localmind/frontend/assets/store_bg.png) (or `store_bg.jpg`).
-2. Refresh your browser at `http://localhost:8000`. The interface will automatically display your custom storefront!
