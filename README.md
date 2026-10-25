@@ -131,7 +131,7 @@ localmind/
 │   ├── assets/               # Storefront background (store_bg.png)
 │   └── index.html            # Storefront page with floating AI chat widget
 ├── models/                    # Model checkpoints & adapters
-│   ├── shopping_lora_adapter/ # Packaged LoRA adapter & metadata card
+│   ├── dobbie_magic_store_lora/ # Packaged LoRA adapter & metadata card
 │   └── shopping_model_merged/ # Merged standalone model weights
 ├── scripts/                   # Launch scripts
 │   ├── setup.sh              # Environment setup script

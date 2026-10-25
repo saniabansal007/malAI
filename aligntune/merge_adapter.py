@@ -1,6 +1,6 @@
 """Merge LoRA adapter into base model weights.
 
-Creates a standalone merged model in models/banking_model_merged/
+Creates a standalone merged model in models/dobbie_magic_store_merged/
 so SGLang can serve it with full RadixAttention prefix caching enabled.
 """
 
@@ -12,8 +12,8 @@ from peft import PeftModel
 
 
 def merge_lora_adapter(
-    adapter_dir: str = "models/shopping_lora_adapter",
-    output_dir: str = "models/shopping_model_merged",
+    adapter_dir: str = "models/dobbie_magic_store_lora",
+    output_dir: str = "models/dobbie_magic_store_merged",
 ):
     adapter_path = Path(adapter_dir)
     dst_path = Path(output_dir)
